@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="37890b4f-fe54-4da7-888e-746779768922" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectId" id="1hNatdTkonKRGXbg6TZbVQQ7MFL" />
+  <component name="ProjectViewState">
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="dart.analysis.tool.window.force.activate" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="dart.settings" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="37890b4f-fe54-4da7-888e-746779768922" name="Default Changelist" comment="" />
+      <created>1599854219947</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1599854219947</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="675" y="364" key="#Inspections" timestamp="1601314651857">
+      <screen x="0" y="23" width="2560" height="1352" />
+    </state>
+    <state x="675" y="364" key="#Inspections/0.23.2560.1352@0.23.2560.1352" timestamp="1601314651857" />
+    <state x="968" y="434" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1601247569020">
+      <screen x="0" y="23" width="2560" height="1352" />
+    </state>
+    <state x="968" y="434" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.23.2560.1352@0.23.2560.1352" timestamp="1601247569020" />
+    <state x="507" y="313" key="SettingsEditor" timestamp="1601314816698">
+      <screen x="0" y="23" width="2560" height="1352" />
+    </state>
+    <state x="507" y="313" key="SettingsEditor/0.23.2560.1352@0.23.2560.1352" timestamp="1601314816698" />
+    <state x="950" y="531" key="com.intellij.ide.util.TipDialog" timestamp="1601312179204">
+      <screen x="0" y="23" width="2560" height="1352" />
+    </state>
+    <state x="950" y="531" key="com.intellij.ide.util.TipDialog/0.23.2560.1352@0.23.2560.1352" timestamp="1601312179204" />
+  </component>
+</project>
