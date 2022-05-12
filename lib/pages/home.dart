@@ -7,6 +7,7 @@ import 'package:admin/pages/data_info.dart';
 import 'package:admin/pages/featured.dart';
 import 'package:admin/pages/notifications.dart';
 import 'package:admin/pages/places.dart';
+import 'package:admin/pages/products.dart';
 import 'package:admin/pages/settings.dart';
 import 'package:admin/pages/sign_in.dart';
 import 'package:admin/pages/states.dart';
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
     'Upload Place',
     'Blogs',
     'Upload Blog',
+    'Upload Product',
     'States',
     'Notifications',
     'Users',
@@ -53,6 +55,7 @@ class _HomePageState extends State<HomePage> {
     LineIcons.arrowCircleUp,
     LineIcons.rocket,
     LineIcons.arrowCircleUp,
+    LineIcons.archive,
     LineIcons.mapPin,
     LineIcons.bell,
     LineIcons.users,
@@ -114,6 +117,7 @@ class _HomePageState extends State<HomePage> {
                     tab(titles[8], icons[8]) as Tab,
                     tab(titles[9], icons[9]) as Tab,
                     tab(titles[10], icons[10]) as Tab,
+                    tab(titles[11], icons[11]) as Tab,
 
                     
                   ],
@@ -124,6 +128,7 @@ class _HomePageState extends State<HomePage> {
                     CoverWidget(widget: UploadPlace()),
                     CoverWidget(widget: BlogPage()),
                     CoverWidget(widget: UploadBlog()),
+                    CoverWidget(widget: Products()),
                     CoverWidget(widget: States()),
                     CoverWidget(widget: Notifications()),
                     CoverWidget(widget: UsersPage()),
