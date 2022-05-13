@@ -46,16 +46,12 @@ Future showProductPreview(context, String? title, String? description,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          TextButton.icon(
+                          TextButton(
                               style: buttonStyle(Colors.grey[200]),
                               onPressed: () async {
                                 // await launch(status!);
                               },
-                              icon: Icon(
-                                Icons.link,
-                                color: Colors.grey[900],
-                              ),
-                              label: Text(
+                              child: Text(
                                 status,
                                 style: TextStyle(color: Colors.grey[900]),
                               ))
