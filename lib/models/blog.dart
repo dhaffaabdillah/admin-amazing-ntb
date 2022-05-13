@@ -1,8 +1,6 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Blog {
-
   String? title;
   String? description;
   String? thumbnailImagelUrl;
@@ -11,20 +9,16 @@ class Blog {
   String? date;
   String? timestamp;
 
-  Blog({
+  Blog(
+      {this.title,
+      this.description,
+      this.thumbnailImagelUrl,
+      this.loves,
+      this.sourceUrl,
+      this.date,
+      this.timestamp});
 
-    this.title,
-    this.description,
-    this.thumbnailImagelUrl,
-    this.loves,
-    this.sourceUrl,
-    this.date,
-    this.timestamp
-    
-  });
-
-
-  factory Blog.fromFirestore(DocumentSnapshot snapshot){
+  factory Blog.fromFirestore(DocumentSnapshot snapshot) {
     Map d = snapshot.data() as Map<dynamic, dynamic>;
     return Blog(
       title: d['title'],
@@ -33,9 +27,7 @@ class Blog {
       loves: d['loves'],
       sourceUrl: d['source'],
       date: d['date'],
-      timestamp: d['timestamp'], 
-
-
+      timestamp: d['timestamp'],
     );
   }
 }

@@ -17,21 +17,21 @@ class UploadPlace extends StatefulWidget {
 }
 
 class _UploadPlaceState extends State<UploadPlace> {
-
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   var formKey = GlobalKey<FormState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final String collectionName = 'places';
-  List paths =[];
+  List paths = [];
   final int _loves = 0;
   final int _commentsCount = 0;
   String? _date;
   String? _timestamp;
-  String _helperText = 'Enter paths list to help users to go to the desired destination like : Dhaka to Sylhet by Bus - 200Tk.....';
+  String _helperText =
+      'Enter paths list to help users to go to the desired destination like : Dhaka to Sylhet by Bus - 200Tk.....';
 
   var stateSelection;
-  
+
   var nameCtrl = TextEditingController();
   var locationCtrl = TextEditingController();
   var descriptionCtrl = TextEditingController();
@@ -40,7 +40,6 @@ class _UploadPlaceState extends State<UploadPlace> {
   var image3Ctrl = TextEditingController();
   var latCtrl = TextEditingController();
   var lngCtrl = TextEditingController();
-
 
   var startpointNameCtrl = TextEditingController();
   var endpointNameCtrl = TextEditingController();
@@ -51,9 +50,7 @@ class _UploadPlaceState extends State<UploadPlace> {
   var endpointLngCtrl = TextEditingController();
   var pathsCtrl = TextEditingController();
 
-
-
-  clearFields(){
+  clearFields() {
     nameCtrl.clear();
     locationCtrl.clear();
     descriptionCtrl.clear();
@@ -73,54 +70,38 @@ class _UploadPlaceState extends State<UploadPlace> {
     paths.clear();
     FocusScope.of(context).unfocus();
   }
-  
 
-  
-  
   bool notifyUsers = true;
   bool uploadStarted = false;
-
-
-
 
   void handleSubmit() async {
     final AdminBloc ab = Provider.of<AdminBloc>(context, listen: false);
 
-    if(stateSelection == null){
+    if (stateSelection == null) {
       openDialog(context, 'Select State First', '');
-    }
-    else{
+    } else {
       if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
-      if(paths.length == 0){
-        openSnacbar(scaffoldKey, 'Paths List can not be empty');
-      } else {
-        if (ab.userType == 'tester') {
-        openDialog(context, 'You are a Tester', 'Only Admin can upload, delete & modify contents');
-      } else {
-        setState(()=> uploadStarted = true);
-        await getDate().then((_) async{
-          await saveToDatabase()
-          .then((value) => context.read<AdminBloc>().increaseCount('places_count'));
-          setState(()=> uploadStarted = false);
-          openDialog(context, 'Uploaded Successfully', '');
-          clearFields();
-          
-          
-        });
+        formKey.currentState!.save();
+        if (paths.length == 0) {
+          openSnacbar(scaffoldKey, 'Paths List can not be empty');
+        } else {
+          if (ab.userType == 'tester') {
+            openDialog(context, 'You are a Tester',
+                'Only Admin can upload, delete & modify contents');
+          } else {
+            setState(() => uploadStarted = true);
+            await getDate().then((_) async {
+              await saveToDatabase().then((value) =>
+                  context.read<AdminBloc>().increaseCount('places_count'));
+              setState(() => uploadStarted = false);
+              openDialog(context, 'Uploaded Successfully', '');
+              clearFields();
+            });
+          }
+        }
       }
-      }
-      
     }
-    }
-    
   }
-
-
-
-
-
-
 
   Future getDate() async {
     DateTime now = DateTime.now();
@@ -130,80 +111,72 @@ class _UploadPlaceState extends State<UploadPlace> {
       _timestamp = _t;
       _date = _d;
     });
-    
   }
-
-
 
   Future saveToDatabase() async {
-    final DocumentReference ref = firestore.collection(collectionName).doc(_timestamp);
-    final DocumentReference ref1 = firestore.collection(collectionName).doc(_timestamp).collection('travel guide').doc(_timestamp);
-    
+    final DocumentReference ref =
+        firestore.collection(collectionName).doc(_timestamp);
+    final DocumentReference ref1 = firestore
+        .collection(collectionName)
+        .doc(_timestamp)
+        .collection('travel guide')
+        .doc(_timestamp);
 
     var _placeData = {
-      'state' : stateSelection,
-      'place name' : nameCtrl.text,
-      'location' : locationCtrl.text,
-      'latitude' : double.parse(latCtrl.text),
-      'longitude' : double.parse(lngCtrl.text),
-      'description' : descriptionCtrl.text,
-      'image-1' : image1Ctrl.text,
-      'image-2' : image2Ctrl.text,
-      'image-3' : image3Ctrl.text,
-      'loves' : _loves,
-      'comments count' : _commentsCount,
-      'date' : _date,
-      'timestamp' : _timestamp
+      'state': stateSelection,
+      'place name': nameCtrl.text,
+      'location': locationCtrl.text,
+      'latitude': double.parse(latCtrl.text),
+      'longitude': double.parse(lngCtrl.text),
+      'description': descriptionCtrl.text,
+      'image-1': image1Ctrl.text,
+      'image-2': image2Ctrl.text,
+      'image-3': image3Ctrl.text,
+      'loves': _loves,
+      'comments count': _commentsCount,
+      'date': _date,
+      'timestamp': _timestamp
     };
 
-    var _guideData  = {
-      'startpoint name' : startpointNameCtrl.text,
-      'endpoint name' : endpointNameCtrl.text,
-      'startpoint lat' : double.parse(startpointLatCtrl.text),
-      'startpoint lng' : double.parse(startpointLngCtrl.text),
-      'endpoint lat' : double.parse(endpointLatCtrl.text),
-      'endpoint lng' : double.parse(endpointLngCtrl.text),
+    var _guideData = {
+      'startpoint name': startpointNameCtrl.text,
+      'endpoint name': endpointNameCtrl.text,
+      'startpoint lat': double.parse(startpointLatCtrl.text),
+      'startpoint lng': double.parse(startpointLngCtrl.text),
+      'endpoint lat': double.parse(endpointLatCtrl.text),
+      'endpoint lng': double.parse(endpointLngCtrl.text),
       'price': priceCtrl.text,
-      'paths' : paths
+      'paths': paths
     };
 
-    await ref.set(_placeData)
-    .then((value) => ref1.set(_guideData));
+    await ref.set(_placeData).then((value) => ref1.set(_guideData));
   }
-  
-  
 
-
-
-
-  handlePreview() async{
+  handlePreview() async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      if(paths.isNotEmpty){
+      if (paths.isNotEmpty) {
         showPlacePreview(
-          context, 
-          nameCtrl.text, 
-          locationCtrl.text, 
-          image1Ctrl.text, 
-          descriptionCtrl.text, 
-          double.parse(latCtrl.text), 
-          double.parse(lngCtrl.text), 
-          startpointNameCtrl.text, 
-          endpointNameCtrl.text, 
-          double.parse(startpointLatCtrl.text), 
-          double.parse(startpointLngCtrl.text),
-          double.parse(endpointLatCtrl.text),
-          double.parse(endpointLngCtrl.text),
-          priceCtrl.text,
-          paths
-        );
-      }else{
+            context,
+            nameCtrl.text,
+            locationCtrl.text,
+            image1Ctrl.text,
+            descriptionCtrl.text,
+            double.parse(latCtrl.text),
+            double.parse(lngCtrl.text),
+            startpointNameCtrl.text,
+            endpointNameCtrl.text,
+            double.parse(startpointLatCtrl.text),
+            double.parse(startpointLngCtrl.text),
+            double.parse(endpointLatCtrl.text),
+            double.parse(endpointLngCtrl.text),
+            priceCtrl.text,
+            paths);
+      } else {
         openToast(context, 'Path List is Empty!');
       }
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -211,359 +184,392 @@ class _UploadPlaceState extends State<UploadPlace> {
     return Scaffold(
       key: scaffoldKey,
       body: Form(
-            key: formKey,
-            child: ListView(children: <Widget>[
-              SizedBox(height: h * 0.10,),
-              Text('Place Details', style: TextStyle(
-                fontSize: 30, fontWeight: FontWeight.w800
-              ),),
-              SizedBox(height: 20,),
+          key: formKey,
+          child: ListView(
+            children: <Widget>[
+              SizedBox(
+                height: h * 0.10,
+              ),
+              Text(
+                'Place Details',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
+              ),
+              SizedBox(
+                height: 20,
+              ),
               statesDropdown(),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               TextFormField(
-                decoration: inputDecoration('Enter place name', 'Place name', nameCtrl),
+                decoration:
+                    inputDecoration('Enter place name', 'Place name', nameCtrl),
                 controller: nameCtrl,
-                validator: (value){
-                  if(value!.isEmpty) return 'Value is empty'; return null;
+                validator: (value) {
+                  if (value!.isEmpty) return 'Value is empty';
+                  return null;
                 },
-                
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               TextFormField(
-                decoration: inputDecoration('Enter location name', 'Location name', locationCtrl),
+                decoration: inputDecoration(
+                    'Enter location name', 'Location name', locationCtrl),
                 controller: locationCtrl,
-                
-                validator: (value){
-                  if(value!.isEmpty) return 'Value is empty'; return null;
+                validator: (value) {
+                  if (value!.isEmpty) return 'Value is empty';
+                  return null;
                 },
-                
               ),
-              SizedBox(height: 20,),
-              
-
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 children: <Widget>[
                   Expanded(
-                child: TextFormField(
-                decoration: inputDecoration('Enter Latitude', 'Latitude', latCtrl),
-                controller: latCtrl,
-                keyboardType: TextInputType.number,
-                validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                },
-                
-              ),
-            ),
-              SizedBox(width: 10,),
-              Expanded(
-                            child: TextFormField(
-                  decoration: inputDecoration('Enter Longitude', 'Longitude', lngCtrl),
-                  keyboardType: TextInputType.number,
-
-                  controller: lngCtrl,
-                  validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                  },
-                  
-                ),
-              ),
-              
+                    child: TextFormField(
+                      decoration: inputDecoration(
+                          'Enter Latitude', 'Latitude', latCtrl),
+                      controller: latCtrl,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Value is empty';
+                        return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      decoration: inputDecoration(
+                          'Enter Longitude', 'Longitude', lngCtrl),
+                      keyboardType: TextInputType.number,
+                      controller: lngCtrl,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Value is empty';
+                        return null;
+                      },
+                    ),
+                  ),
                 ],
               ),
-              SizedBox(height: 20,),
-
-
+              SizedBox(
+                height: 20,
+              ),
               TextFormField(
-                decoration: inputDecoration('Enter image url (thumbnail)', 'Image1(Thumbnail)', image1Ctrl),
+                decoration: inputDecoration('Enter image url (thumbnail)',
+                    'Image1(Thumbnail)', image1Ctrl),
                 controller: image1Ctrl,
-                validator: (value){
-                  if(value!.isEmpty) return 'Value is empty'; return null;
+                validator: (value) {
+                  if (value!.isEmpty) return 'Value is empty';
+                  return null;
                 },
-                
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               TextFormField(
-                decoration: inputDecoration('Enter image url', 'Image2', image2Ctrl),
+                decoration:
+                    inputDecoration('Enter image url', 'Image2', image2Ctrl),
                 controller: image2Ctrl,
-                validator: (value){
-                  if(value!.isEmpty) return 'Value is empty'; return null;
+                validator: (value) {
+                  if (value!.isEmpty) return 'Value is empty';
+                  return null;
                 },
-                
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               TextFormField(
-                decoration: inputDecoration('Enter image url', 'Image3', image3Ctrl),
+                decoration:
+                    inputDecoration('Enter image url', 'Image3', image3Ctrl),
                 controller: image3Ctrl,
-                validator: (value){
-                  if(value!.isEmpty) return 'Value is empty'; return null;
+                validator: (value) {
+                  if (value!.isEmpty) return 'Value is empty';
+                  return null;
                 },
-                
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               TextFormField(
                 decoration: InputDecoration(
-                  hintText: 'Enter place details (Html or Normal Text)',
-                  border: OutlineInputBorder(),
-                  labelText: 'Place details',
-                  contentPadding: EdgeInsets.only(right: 0, left: 10, top: 15, bottom: 5),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      radius: 15,
-                      backgroundColor: Colors.grey[300],
-                      child: IconButton(icon: Icon(Icons.close, size: 15), onPressed: (){
-                        descriptionCtrl.clear();
-                      }),
-                    ),
-                  )
-                  
-                ),
+                    hintText: 'Enter place details (Html or Normal Text)',
+                    border: OutlineInputBorder(),
+                    labelText: 'Place details',
+                    contentPadding:
+                        EdgeInsets.only(right: 0, left: 10, top: 15, bottom: 5),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.grey[300],
+                        child: IconButton(
+                            icon: Icon(Icons.close, size: 15),
+                            onPressed: () {
+                              descriptionCtrl.clear();
+                            }),
+                      ),
+                    )),
                 textAlignVertical: TextAlignVertical.top,
                 minLines: 5,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 controller: descriptionCtrl,
-                validator: (value){
-                  if(value!.isEmpty) return 'Value is empty'; return null;
+                validator: (value) {
+                  if (value!.isEmpty) return 'Value is empty';
+                  return null;
                 },
-                
               ),
-              SizedBox(height: 50,),
-              Text('Travel Guide Details', style: TextStyle(
-                fontSize: 30, fontWeight: FontWeight.w800
-              ),),
-              SizedBox(height: 20,),
-
-
+              SizedBox(
+                height: 50,
+              ),
+              Text(
+                'Travel Guide Details',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
+              ),
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 children: <Widget>[
                   Expanded(
-                                    child: TextFormField(
-                decoration: inputDecoration('Enter startpont name', 'Startpont name', startpointNameCtrl),
-                controller: startpointNameCtrl,
-                
-                validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                },
-                
-              ),
-                  ),
-              SizedBox(width: 10,),
-              Expanded(
-                            child: TextFormField(
-                  decoration: inputDecoration('Enter endpoint name', 'Endpoint name', endpointNameCtrl),
-                  
-
-                  controller: endpointNameCtrl,
-                  validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                  },
-                  
-                ),
-              ),
-              
-                ],
-              ),
-
-              SizedBox(height: 20,),
-              TextFormField(
-                  decoration: inputDecoration('Enter travel cost', 'Price', priceCtrl),
-                  keyboardType: TextInputType.number,
-
-                  controller: priceCtrl,
-                  validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                  },
-                  
-                ),
-              SizedBox(height: 20,),
-
-              Row(
-                children: <Widget>[
-                  Expanded(
-                                    child: TextFormField(
-                decoration: inputDecoration('Enter startpoint latitude', 'Startpoint latitude', startpointLatCtrl),
-                controller: startpointLatCtrl,
-                keyboardType: TextInputType.number,
-                validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                },
-                
-              ),
-                  ),
-              SizedBox(width: 10,),
-              Expanded(
-                            child: TextFormField(
-                  decoration: inputDecoration('Enter startpoint longitude', 'Startpoint longitude', startpointLngCtrl),
-                  keyboardType: TextInputType.number,
-
-                  controller: startpointLngCtrl,
-                  validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                  },
-                  
-                ),
-              ),
-              
-                ],
-              ),
-              SizedBox(height: 20,),
-
-              Row(
-                children: <Widget>[
-                  Expanded(
-                                    child: TextFormField(
-                decoration: inputDecoration('Enter endpoint latitude', 'Endpoint latitude', endpointLatCtrl),
-                controller: endpointLatCtrl,
-                keyboardType: TextInputType.number,
-                validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                },
-                
-              ),
-                  ),
-              SizedBox(width: 10,),
-              Expanded(
-                  child: TextFormField(
-                  decoration: inputDecoration('Enter endpoint longitude', 'Endpoint longitude', endpointLngCtrl),
-                  keyboardType: TextInputType.number,
-
-                  controller: endpointLngCtrl,
-                  validator: (value){
-                    if(value!.isEmpty) return 'Value is empty'; return null;
-                  },
-                  
-                ),
-              ),
-              
-                ],
-              ),
-              SizedBox(height: 20,),
-
-              TextFormField(
-                  
-                  decoration: InputDecoration(
-                  hintText: "Enter path list one by one by tapping 'Enter' everytime",
-                  border: OutlineInputBorder(),
-                  labelText: 'Paths list',
-                  helperText: _helperText,
-                  contentPadding: EdgeInsets.only(right: 0, left: 10, top: 15, bottom: 5),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      radius: 15,
-                      backgroundColor: Colors.grey[300],
-                      child: IconButton(icon: Icon(Icons.clear, size: 15, color: Colors.blueAccent,), onPressed: (){
-                        pathsCtrl.clear();
-                      }),
+                    child: TextFormField(
+                      decoration: inputDecoration('Enter startpont name',
+                          'Startpont name', startpointNameCtrl),
+                      controller: startpointNameCtrl,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Value is empty';
+                        return null;
+                      },
                     ),
-                  )
-                  
-                ),
-                  controller: pathsCtrl,
-                  
-                  onFieldSubmitted: (String value) {
-                    if(value.length == 0){
-                      setState(() {
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      decoration: inputDecoration('Enter endpoint name',
+                          'Endpoint name', endpointNameCtrl),
+                      controller: endpointNameCtrl,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Value is empty';
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                decoration:
+                    inputDecoration('Enter travel cost', 'Price', priceCtrl),
+                keyboardType: TextInputType.number,
+                controller: priceCtrl,
+                validator: (value) {
+                  if (value!.isEmpty) return 'Value is empty';
+                  return null;
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      decoration: inputDecoration('Enter startpoint latitude',
+                          'Startpoint latitude', startpointLatCtrl),
+                      controller: startpointLatCtrl,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Value is empty';
+                        return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      decoration: inputDecoration('Enter startpoint longitude',
+                          'Startpoint longitude', startpointLngCtrl),
+                      keyboardType: TextInputType.number,
+                      controller: startpointLngCtrl,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Value is empty';
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      decoration: inputDecoration('Enter endpoint latitude',
+                          'Endpoint latitude', endpointLatCtrl),
+                      controller: endpointLatCtrl,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Value is empty';
+                        return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      decoration: inputDecoration('Enter endpoint longitude',
+                          'Endpoint longitude', endpointLngCtrl),
+                      keyboardType: TextInputType.number,
+                      controller: endpointLngCtrl,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Value is empty';
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                    hintText:
+                        "Enter path list one by one by tapping 'Enter' everytime",
+                    border: OutlineInputBorder(),
+                    labelText: 'Paths list',
+                    helperText: _helperText,
+                    contentPadding:
+                        EdgeInsets.only(right: 0, left: 10, top: 15, bottom: 5),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.grey[300],
+                        child: IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              size: 15,
+                              color: Colors.blueAccent,
+                            ),
+                            onPressed: () {
+                              pathsCtrl.clear();
+                            }),
+                      ),
+                    )),
+                controller: pathsCtrl,
+                onFieldSubmitted: (String value) {
+                  if (value.length == 0) {
+                    setState(() {
                       _helperText = "You can't put empty item is the list";
-                        
-                      });
-                    } else{
-                      setState(() {
+                    });
+                  } else {
+                    setState(() {
                       paths.add(value);
                       _helperText = 'Added ${paths.length} items';
                       print(paths);
                     });
-                    }
-                    
-                  },
-                ),
-
-              SizedBox(height: 20,),
-              Container(
-                
-                child: paths.length == 0 ? Center(child: Text('No path list were added'),) :
-                
-                ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: paths.length,
-                      itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          child: Text(index.toString()),
-                        ),
-                        title: Text(paths[index]),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete_outline), 
-                          onPressed: (){
-                            setState(() {
-                              paths.remove(paths[index]);
-                              _helperText = 'Added ${paths.length} items';
-
-                            });
-                          }),
-                      );
-                     },
-                    ),
-                
-                
+                  }
+                },
               ),
-
-
-              SizedBox(height: 100,),
-
-
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        TextButton.icon(
-                          
-                          icon: Icon(Icons.remove_red_eye, size: 25, color: Colors.blueAccent,),
-                          label: Text('Preview', style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black
-                          ),),
-                          onPressed: (){
-                            handlePreview();
-                          }
-                        )
-                      ],
-                    ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                    color: Colors.deepPurpleAccent,
-                    height: 45,
-                    child: uploadStarted == true
-                      ? Center(child: Container(height: 30, width: 30,child: CircularProgressIndicator()),)
-                      : TextButton(
-                        child: Text(
-                          'Upload Place Data',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        onPressed: () async{
-                          handleSubmit();
-                          
-                        })
-                      
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                child: paths.length == 0
+                    ? Center(
+                        child: Text('No path list were added'),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: paths.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                            leading: CircleAvatar(
+                              child: Text(index.toString()),
+                            ),
+                            title: Text(paths[index]),
+                            trailing: IconButton(
+                                icon: Icon(Icons.delete_outline),
+                                onPressed: () {
+                                  setState(() {
+                                    paths.remove(paths[index]);
+                                    _helperText = 'Added ${paths.length} items';
+                                  });
+                                }),
+                          );
+                        },
                       ),
-                SizedBox(
-                  height: 200,
-                ),
-              
-              
-
-            ],)),
-      );
-        
-   }
-
-
+              ),
+              SizedBox(
+                height: 100,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  TextButton.icon(
+                      icon: Icon(
+                        Icons.remove_red_eye,
+                        size: 25,
+                        color: Colors.blueAccent,
+                      ),
+                      label: Text(
+                        'Preview',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400, color: Colors.black),
+                      ),
+                      onPressed: () {
+                        handlePreview();
+                      })
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                  color: Colors.deepPurpleAccent,
+                  height: 45,
+                  child: uploadStarted == true
+                      ? Center(
+                          child: Container(
+                              height: 30,
+                              width: 30,
+                              child: CircularProgressIndicator()),
+                        )
+                      : TextButton(
+                          child: Text(
+                            'Upload Place Data',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          onPressed: () async {
+                            handleSubmit();
+                          })),
+              SizedBox(
+                height: 200,
+              ),
+            ],
+          )),
+    );
+  }
 
   Widget statesDropdown() {
     final AdminBloc ab = Provider.of(context, listen: false);
@@ -596,6 +602,4 @@ class _UploadPlaceState extends State<UploadPlace> {
               );
             }).toList()));
   }
-
-
 }

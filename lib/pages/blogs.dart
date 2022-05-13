@@ -44,7 +44,7 @@ class _BlogPageState extends State<BlogPage> {
     _sortByText = 'Newest First';
     _orderBy = 'timestamp';
     _descending = true;
-    if(this.mounted){
+    if (this.mounted) {
       _getData();
     }
   }
@@ -76,18 +76,17 @@ class _BlogPageState extends State<BlogPage> {
         });
       }
     } else {
-      if(_lastVisible == null){
+      if (_lastVisible == null) {
         setState(() {
           _isLoading = false;
-          _hasData = false; 
+          _hasData = false;
         });
-      }else{
+      } else {
         setState(() {
           _isLoading = false;
           _hasData = true;
         });
         openToast(context, 'No more content available');
-        
       }
     }
     return null;
@@ -98,8 +97,6 @@ class _BlogPageState extends State<BlogPage> {
     super.dispose();
     controller!.dispose();
   }
-
-
 
   void _scrollListener() {
     if (!_isLoading) {
@@ -114,18 +111,17 @@ class _BlogPageState extends State<BlogPage> {
     nextScreen(
         context,
         CommentsPage(
-            collectionName: collectionName, timestamp: timestamp, title: 'Blog'));
+            collectionName: collectionName,
+            timestamp: timestamp,
+            title: 'Blog'));
   }
-
-
 
   handlePreview(Blog d) async {
-    await showBlogPreview(context, d.title, d.description, d.thumbnailImagelUrl, d.loves, d.sourceUrl, d.date);
+    await showBlogPreview(context, d.title, d.description, d.thumbnailImagelUrl,
+        d.loves, d.sourceUrl, d.date);
   }
 
-
-
-  reloadData (){
+  reloadData() {
     setState(() {
       _isLoading = true;
       _snap.clear();
@@ -175,15 +171,17 @@ class _BlogPageState extends State<BlogPage> {
                     onPressed: () async {
                       if (ab.userType == 'tester') {
                         Navigator.pop(context);
-                        openDialog(context, 'You are a Tester','Only admin can delete contents');
+                        openDialog(context, 'You are a Tester',
+                            'Only admin can delete contents');
                       } else {
-                        await ab.deleteContent(timestamp, 'blogs')
-                        .then((value) => ab.decreaseCount('blogs_count'))
-                        .then((value) => openToast(context, 'Item deleted successfully!'));
+                        await ab
+                            .deleteContent(timestamp, 'blogs')
+                            .then((value) => ab.decreaseCount('blogs_count'))
+                            .then((value) => openToast(
+                                context, 'Item deleted successfully!'));
                         reloadData();
                         Navigator.pop(context);
                       }
-                      
                     },
                   ),
                   SizedBox(width: 10),
@@ -231,35 +229,36 @@ class _BlogPageState extends State<BlogPage> {
               color: Colors.indigoAccent,
               borderRadius: BorderRadius.circular(15)),
         ),
-        
         Expanded(
           child: _hasData == false
-          ? EmptyPage(icon: Icons.content_paste, message: 'No data available.\nUpload first!')
-          : RefreshIndicator(
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: 30, bottom: 20),
-              controller: controller,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemCount: _data.length + 1,
-              itemBuilder: (_, int index) {
-                if (index < _data.length) {
-                  return dataList(_data[index]);
-                }
-                return Center(
-                  child: new Opacity(
-                    opacity: _isLoading ? 1.0 : 0.0,
-                    child: new SizedBox(
-                        width: 32.0,
-                        height: 32.0,
-                        child: new CircularProgressIndicator()),
+              ? EmptyPage(
+                  icon: Icons.content_paste,
+                  message: 'No data available.\nUpload first!')
+              : RefreshIndicator(
+                  child: ListView.builder(
+                    padding: EdgeInsets.only(top: 30, bottom: 20),
+                    controller: controller,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: _data.length + 1,
+                    itemBuilder: (_, int index) {
+                      if (index < _data.length) {
+                        return dataList(_data[index]);
+                      }
+                      return Center(
+                        child: new Opacity(
+                          opacity: _isLoading ? 1.0 : 0.0,
+                          child: new SizedBox(
+                              width: 32.0,
+                              height: 32.0,
+                              child: new CircularProgressIndicator()),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-            onRefresh: () async {
-              reloadData();
-            },
-          ),
+                  onRefresh: () async {
+                    reloadData();
+                  },
+                ),
         ),
       ],
     );
@@ -279,10 +278,13 @@ class _BlogPageState extends State<BlogPage> {
             height: 130,
             width: 130,
             decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(10),
             ),
-              child: CustomCacheImage(imageUrl: d.thumbnailImagelUrl, radius: 10,),
+            child: CustomCacheImage(
+              imageUrl: d.thumbnailImagelUrl,
+              radius: 10,
+            ),
           ),
           Flexible(
             child: Padding(
@@ -315,7 +317,6 @@ class _BlogPageState extends State<BlogPage> {
                       SizedBox(width: 10),
                       Icon(Icons.access_time, size: 15, color: Colors.grey),
                       SizedBox(width: 3),
-
                       Text(
                         d.date!,
                         style: TextStyle(fontSize: 12),
@@ -419,24 +420,33 @@ class _BlogPageState extends State<BlogPage> {
     );
   }
 
-  Widget sortingPopup (){
+  Widget sortingPopup() {
     return PopupMenuButton(
       child: Container(
-              height: 40,
-              padding: EdgeInsets.only(left: 20, right: 20),
-              decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(30)),
-              child : Row(children: [
-                Icon(CupertinoIcons.sort_down, color: Colors.grey[800],),
-                SizedBox(width: 10,),
-              Text('Sort By - $_sortByText', style: TextStyle(
-                color: Colors.grey[900],
-                fontWeight: FontWeight.w500
-              ),)
-              ],),),
-      itemBuilder: (BuildContext context){
+        height: 40,
+        padding: EdgeInsets.only(left: 20, right: 20),
+        decoration: BoxDecoration(
+            color: Colors.grey[100],
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(30)),
+        child: Row(
+          children: [
+            Icon(
+              CupertinoIcons.sort_down,
+              color: Colors.grey[800],
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              'Sort By - $_sortByText',
+              style: TextStyle(
+                  color: Colors.grey[900], fontWeight: FontWeight.w500),
+            )
+          ],
+        ),
+      ),
+      itemBuilder: (BuildContext context) {
         return <PopupMenuItem>[
           PopupMenuItem(
             child: Text('Newest First'),
@@ -452,20 +462,20 @@ class _BlogPageState extends State<BlogPage> {
           ),
         ];
       },
-      onSelected: (dynamic value){
-        if(value == 'new'){
+      onSelected: (dynamic value) {
+        if (value == 'new') {
           setState(() {
             _sortByText = 'Newest First';
             _orderBy = 'timestamp';
             _descending = true;
           });
-        }else if(value == 'old'){
+        } else if (value == 'old') {
           setState(() {
             _sortByText = 'Oldest First';
             _orderBy = 'timestamp';
             _descending = false;
           });
-        }else if(value == 'popular'){
+        } else if (value == 'popular') {
           setState(() {
             _sortByText = 'Most Popular';
             _orderBy = 'loves';
@@ -476,10 +486,4 @@ class _BlogPageState extends State<BlogPage> {
       },
     );
   }
-
-
 }
-
-
-
-
