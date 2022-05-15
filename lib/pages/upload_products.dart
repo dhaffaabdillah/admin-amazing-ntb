@@ -1,7 +1,6 @@
 import 'package:admin/blocs/admin_bloc.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/styles.dart';
-import 'package:admin/widgets/blog_preview.dart';
 import 'package:admin/widgets/product_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +51,7 @@ class _UploadProductsState extends State<UploadProducts> {
           setState(() => uploadStarted = true);
           await getDate().then((_) async {
             await saveToDatabase().then((value) =>
-                context.read<AdminBloc>().increaseCount('blogs_count'));
+                context.read<AdminBloc>().increaseCount('products_count'));
             setState(() => uploadStarted = false);
             openDialog(context, 'Uploaded Successfully', '');
             clearTextFeilds();
@@ -83,8 +82,9 @@ class _UploadProductsState extends State<UploadProducts> {
       'image-2': image2Ctrl.text,
       'image-3': image3Ctrl.text,
       'status': statusSelection,
-      'created_at': _timestamp,
-      'updated_at': _timestamp
+      'created_at': _date,
+      'updated_at': _date,
+      'timestamp': _timestamp
     };
     await ref.set(_productData);
   }

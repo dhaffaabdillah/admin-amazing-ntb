@@ -1,7 +1,9 @@
 import 'package:admin/blocs/admin_bloc.dart';
 import 'package:admin/models/blog.dart';
+import 'package:admin/models/product.dart';
 import 'package:admin/pages/comments.dart';
 import 'package:admin/pages/update_blog.dart';
+import 'package:admin/pages/update_product.dart';
 import 'package:admin/utils/cached_image.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/empty.dart';
@@ -9,6 +11,7 @@ import 'package:admin/utils/next_screen.dart';
 import 'package:admin/utils/styles.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/widgets/blog_preview.dart';
+import 'package:admin/widgets/product_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +30,9 @@ class _ProductPageState extends State<ProductPage> {
   DocumentSnapshot? _lastVisible;
   late bool _isLoading;
   List<DocumentSnapshot> _snap = [];
-  List<Blog> _data = [];
+  List<ProductModel> _data = [];
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String collectionName = 'blogs';
+  String collectionName = 'product';
 
   late bool _descending;
   late String _orderBy;
@@ -42,7 +45,7 @@ class _ProductPageState extends State<ProductPage> {
     super.initState();
     _isLoading = true;
     _sortByText = 'Newest First';
-    _orderBy = 'timestamp';
+    _orderBy = 'created_at';
     _descending = true;
     if (this.mounted) {
       _getData();
@@ -72,7 +75,7 @@ class _ProductPageState extends State<ProductPage> {
           _isLoading = false;
           _hasData = true;
           _snap.addAll(data.docs);
-          _data = _snap.map((e) => Blog.fromFirestore(e)).toList();
+          _data = _snap.map((e) => ProductModel.fromFirestore(e)).toList();
         });
       }
     } else {
@@ -113,12 +116,12 @@ class _ProductPageState extends State<ProductPage> {
         CommentsPage(
             collectionName: collectionName,
             timestamp: timestamp,
-            title: 'Blog'));
+            title: 'Product'));
   }
 
-  handlePreview(Blog d) async {
-    await showBlogPreview(context, d.title, d.description, d.thumbnailImagelUrl,
-        d.loves, d.sourceUrl, d.date);
+  handlePreview(ProductModel d) async {
+    await showProductPreview(context, d.productName, d.productDetails, d.image1,
+        d.phone, d.status.toString(), d.created_at);
   }
 
   reloadData() {
@@ -175,8 +178,8 @@ class _ProductPageState extends State<ProductPage> {
                             'Only admin can delete contents');
                       } else {
                         await ab
-                            .deleteContent(timestamp, 'blogs')
-                            .then((value) => ab.decreaseCount('blogs_count'))
+                            .deleteContent(timestamp, 'product')
+                            .then((value) => ab.decreaseCount('products_count'))
                             .then((value) => openToast(
                                 context, 'Item deleted successfully!'));
                         reloadData();
@@ -215,7 +218,7 @@ class _ProductPageState extends State<ProductPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Blogs',
+              'Products',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
             ),
             sortingPopup(),
@@ -264,7 +267,7 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  Widget dataList(Blog d) {
+  Widget dataList(ProductModel d) {
     return Container(
       padding: EdgeInsets.all(15),
       margin: EdgeInsets.only(top: 5, bottom: 5),
@@ -282,7 +285,7 @@ class _ProductPageState extends State<ProductPage> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: CustomCacheImage(
-              imageUrl: d.thumbnailImagelUrl,
+              imageUrl: d.image1,
               radius: 10,
             ),
           ),
@@ -296,7 +299,7 @@ class _ProductPageState extends State<ProductPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    d.title!,
+                    d.productName!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -318,7 +321,7 @@ class _ProductPageState extends State<ProductPage> {
                       Icon(Icons.access_time, size: 15, color: Colors.grey),
                       SizedBox(width: 3),
                       Text(
-                        d.date!,
+                        d.created_at!,
                         style: TextStyle(fontSize: 12),
                       ),
                     ],
@@ -329,43 +332,43 @@ class _ProductPageState extends State<ProductPage> {
                   Row(
                     children: <Widget>[
                       Container(
-                        height: 35,
-                        width: 45,
-                        decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.favorite,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
-                            Text(
-                              d.loves.toString(),
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 13),
-                            )
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      InkWell(
-                        child: Container(
-                          height: 35,
-                          width: 45,
-                          decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Icon(
-                            Icons.comment,
-                            size: 16,
-                            color: Colors.grey[800],
+                          // height: 35,
+                          // width: 45,
+                          // decoration: BoxDecoration(
+                          //     color: Colors.grey[200],
+                          //     borderRadius: BorderRadius.circular(10)),
+                          // child: Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: <Widget>[
+                          //     Icon(
+                          //       Icons.favorite,
+                          //       size: 16,
+                          //       color: Colors.grey,
+                          //     ),
+                          //     Text(
+                          //       d.loves.toString(),
+                          //       style:
+                          //           TextStyle(color: Colors.grey, fontSize: 13),
+                          //     )
+                          //   ],
+                          // ),
                           ),
-                        ),
-                        onTap: () => navigateToCommentsPage(d.timestamp),
-                      ),
+                      // SizedBox(width: 10),
+                      // InkWell(
+                      //   child: Container(
+                      //     height: 35,
+                      //     width: 45,
+                      //     decoration: BoxDecoration(
+                      //         color: Colors.grey[200],
+                      //         borderRadius: BorderRadius.circular(10)),
+                      //     child: Icon(
+                      //       Icons.comment,
+                      //       size: 16,
+                      //       color: Colors.grey[800],
+                      //     ),
+                      //   ),
+                      //   onTap: () => navigateToCommentsPage(d.timestamp),
+                      // ),
                       SizedBox(
                         width: 10,
                       ),
@@ -392,7 +395,7 @@ class _ProductPageState extends State<ProductPage> {
                             child: Icon(Icons.edit,
                                 size: 16, color: Colors.grey[800])),
                         onTap: () {
-                          nextScreen(context, UpdateBlog(blogData: d));
+                          nextScreen(context, UpdateProduct(productData: d));
                         },
                       ),
                       SizedBox(width: 10),
