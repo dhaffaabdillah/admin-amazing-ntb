@@ -1,8 +1,10 @@
 import 'package:admin/blocs/admin_bloc.dart';
+import 'package:admin/models/user.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/styles.dart';
 import 'package:admin/widgets/product_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +29,7 @@ class _UploadProductsState extends State<UploadProducts> {
   var image3Ctrl = TextEditingController();
 
   var statusSelection;
+  var emailSelection;
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -41,6 +44,8 @@ class _UploadProductsState extends State<UploadProducts> {
 
     if (statusSelection == null) {
       openDialog(context, 'Select Status Please', '');
+    } else if(emailSelection == null) {
+      openDialog(context, 'Select User Email Please', '');
     } else {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
@@ -77,6 +82,7 @@ class _UploadProductsState extends State<UploadProducts> {
     _productData = {
       'productName': productNameCtrl.text,
       'productDetail': productDetailCtrl.text,
+      'email': emailSelection,
       'phone': sellerContact.text,
       'image-1': image1Ctrl.text,
       'image-2': image2Ctrl.text,
@@ -135,6 +141,10 @@ class _UploadProductsState extends State<UploadProducts> {
                 height: 20,
               ),
               statusDropdown(),
+              SizedBox(
+                height: 20,
+              ),
+              userDropdown(),
               SizedBox(
                 height: 20,
               ),
@@ -295,6 +305,7 @@ class _UploadProductsState extends State<UploadProducts> {
             border: Border.all(color: Colors.grey[300]!),
             borderRadius: BorderRadius.circular(30)),
         child: DropdownButtonFormField(
+            
             itemHeight: 50,
             decoration: InputDecoration(border: InputBorder.none),
             onChanged: (dynamic value) {
@@ -316,4 +327,35 @@ class _UploadProductsState extends State<UploadProducts> {
               );
             }).toList()));
   }
+
+  Widget userDropdown() {
+    final AdminBloc ab = Provider.of(context, listen: false);
+    return Container(
+        height: 50,
+        padding: EdgeInsets.only(left: 15, right: 15),
+        decoration: BoxDecoration(
+            color: Colors.grey[200],
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(30)),
+        child: DropdownSearch(
+          mode: Mode.DIALOG,
+          showSearchBox: true,
+          dropdownSearchDecoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: "Select User Email"
+          ),
+          onChanged: (dynamic value) {
+            setState(() {
+              emailSelection = value;
+            });
+          },
+          onSaved: (dynamic value) {
+            setState(() {
+              emailSelection = value;
+            });
+          }, 
+          items: ab.users.map((e) => e).toList()
+        ));
+  }
+
 }
