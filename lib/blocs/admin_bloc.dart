@@ -14,6 +14,9 @@ class AdminBloc extends ChangeNotifier {
 
   List _states = [];
   List get states => _states;
+
+  List _users = [];
+  List get users => _users;
   
 
   AdminBloc() {
@@ -139,6 +142,18 @@ class AdminBloc extends ChangeNotifier {
     
   }
 
+  Future getUsers ()async{
+    QuerySnapshot snap = await firestore.collection('users').get();
+    List d = snap.docs;
+    _users.clear();
+    d.forEach((element) {
+      _users.add(element['email']);
+    });
+
+
+    notifyListeners();
+    
+  }
 
 
   

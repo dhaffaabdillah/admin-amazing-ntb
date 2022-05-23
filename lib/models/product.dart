@@ -3,8 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ProductModel {
   String? productName;
   String? productDetails;
-  String? authorId;
-  int? price;
+  String? email;
   String? phone;
   String? image1;
   String? image2;
@@ -13,11 +12,11 @@ class ProductModel {
   String? created_at;
   String? updated_at;
   String? timestamp;
+  
   ProductModel({
     this.productName,
     this.productDetails,
-    this.authorId,
-    this.price,
+    this.email,
     this.phone,
     this.image1,
     this.image2,
@@ -33,8 +32,7 @@ class ProductModel {
     return ProductModel(
       productName: data['productName'],
       productDetails: data['productDetail'],
-      // authorId: data['authorId'],
-      // price: data['price'],
+      email: data['email'],
       phone: data['phone'],
       image1: data['image-1'],
       image2: data['image-2'],
@@ -50,7 +48,7 @@ class ProductModel {
     return {
       'productName': productName,
       'productDetails': productDetails,
-      // 'price': price,
+      'email': email,
       'phone': phone,
       'image1': image1,
       'image2': image2,

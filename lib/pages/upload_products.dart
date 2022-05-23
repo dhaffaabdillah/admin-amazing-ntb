@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:searchfield/searchfield.dart';
 
 class UploadProducts extends StatefulWidget {
   UploadProducts({Key? key}) : super(key: key);
@@ -27,6 +28,7 @@ class _UploadProductsState extends State<UploadProducts> {
   var image3Ctrl = TextEditingController();
 
   var statusSelection;
+  var usersSelection  = TextEditingController();
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -41,6 +43,8 @@ class _UploadProductsState extends State<UploadProducts> {
 
     if (statusSelection == null) {
       openDialog(context, 'Select Status Please', '');
+    } else if (usersSelection.text.length == 0) {
+      openDialog(context, 'Select User Email Please', '');
     } else {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
@@ -77,6 +81,7 @@ class _UploadProductsState extends State<UploadProducts> {
     _productData = {
       'productName': productNameCtrl.text,
       'productDetail': productDetailCtrl.text,
+      'email': usersSelection.text,
       'phone': sellerContact.text,
       'image-1': image1Ctrl.text,
       'image-2': image2Ctrl.text,
@@ -93,6 +98,7 @@ class _UploadProductsState extends State<UploadProducts> {
     productNameCtrl.clear();
     productDetailCtrl.clear();
     sellerContact.clear();
+    usersSelection.clear();
     image1Ctrl.clear();
     image2Ctrl.clear();
     image3Ctrl.clear();
@@ -135,6 +141,10 @@ class _UploadProductsState extends State<UploadProducts> {
                 height: 20,
               ),
               statusDropdown(),
+              SizedBox(
+                height: 20,
+              ),
+              emailDropdown(),
               SizedBox(
                 height: 20,
               ),
@@ -316,4 +326,40 @@ class _UploadProductsState extends State<UploadProducts> {
               );
             }).toList()));
   }
+
+    Widget emailDropdown() {
+    // final AdminBloc ab = Provider.of(context, listen: false);
+
+    final AdminBloc ab = Provider.of(context, listen: false);
+
+      return Container(
+        height: 50,
+        padding: EdgeInsets.only(left: 15, right: 15),
+        decoration: BoxDecoration(
+            color: Colors.grey[200],
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(30)),
+        child: SearchField<String>(
+        hint: 'Select Users',
+        searchInputDecoration: InputDecoration(
+          border: InputBorder.none
+        ),
+        suggestionState: Suggestion.expand,
+        suggestions: ab.users
+          .map(
+          (e) => SearchFieldListItem<String>(
+              e,
+              item: e,
+          ),
+        )
+        .toList(),
+        controller: usersSelection,
+        maxSuggestionsInViewPort: 5,
+        searchStyle: TextStyle(
+          fontSize: 15,
+          color: Colors.black.withOpacity(0.8),
+        ),
+        ));
+  }
+  
 }
