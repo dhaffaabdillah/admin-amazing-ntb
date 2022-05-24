@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:admin/blocs/admin_bloc.dart';
+import 'package:admin/utils/cached_image.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/styles.dart';
 import 'package:admin/widgets/product_preview.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:searchfield/searchfield.dart';
+import 'package:universal_html/html.dart';
 
 class UploadProducts extends StatefulWidget {
   UploadProducts({Key? key}) : super(key: key);
@@ -28,12 +30,12 @@ class _UploadProductsState extends State<UploadProducts> {
   var productDetailCtrl = TextEditingController();
   var sellerContact = TextEditingController();
   var priceCtrl = TextEditingController();
-  var image1Ctrl = TextEditingController();
-  var image2Ctrl = TextEditingController();
-  var image3Ctrl = TextEditingController();
+
+  Uint8List? thumbnail, img1, img2;
+  String thumbnailName = "", img1Name = "", img2Name = "";
 
   var statusSelection;
-  var usersSelection  = TextEditingController();
+  var usersSelection = TextEditingController();
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -50,6 +52,8 @@ class _UploadProductsState extends State<UploadProducts> {
       openDialog(context, 'Select Status Please', '');
     } else if (usersSelection.text.length == 0) {
       openDialog(context, 'Select User Email Please', '');
+    } else if(thumbnailName.length == 0) {
+        openDialog(context, 'Please Enter Thumnail First', '');
     } else {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
@@ -83,21 +87,45 @@ class _UploadProductsState extends State<UploadProducts> {
   Future saveToDatabase() async {
     final DocumentReference ref =
         firestore.collection('product').doc(_timestamp);
-    _productData = {
-      'productName': productNameCtrl.text,
-      'productDetail': productDetailCtrl.text,
-      'email': usersSelection.text,
-      'phone': sellerContact.text,
-      'price': priceCtrl.text,
-      'image-1': image1Ctrl.text,
-      'image-2': image2Ctrl.text,
-      'image-3': image3Ctrl.text,
-      'status': statusSelection,
-      'created_at': _date,
-      'updated_at': _date,
-      'timestamp': _timestamp
-    };
-    await ref.set(_productData);
+        String waktu = _timestamp.toString();
+        FirebaseStorage.instance
+                .ref()
+                .child("files/$waktu-thumbnail-$thumbnailName")
+                .putData(thumbnail!);
+
+        String path1 = "https://firebasestorage.googleapis.com/v0/b/dev-admin-amazing-ntb.appspot.com/o/files%2F$waktu-thumbnail-$thumbnailName?alt=media";
+        String path2 = img1Name.length == 0 ? "" : "https://firebasestorage.googleapis.com/v0/b/dev-admin-amazing-ntb.appspot.com/o/files%2F$waktu-img1-$img1Name?alt=media";
+        String path3 = img2Name.length == 0 ? "" : "https://firebasestorage.googleapis.com/v0/b/dev-admin-amazing-ntb.appspot.com/o/files%2F$waktu-img2-$img2Name?alt=media";
+
+      if(path2.length > 0){
+          FirebaseStorage.instance
+                  .ref()
+                  .child("files/$waktu-img1-$img1Name")
+                  .putData(img1!);
+      } 
+      
+      if(path3.length > 0) {
+          FirebaseStorage.instance
+                  .ref()
+                  .child("files/$waktu-img2-$img2Name")
+                  .putData(img2!);
+      }
+
+      _productData = {
+        'productName': productNameCtrl.text,
+        'productDetail': productDetailCtrl.text,
+        'email': usersSelection.text,
+        'phone': sellerContact.text,
+        'price': priceCtrl.text,
+        'image-1': path1,
+        'image-2': path2,
+        'image-3': path3,
+        'status': statusSelection,
+        'created_at': _date,
+        'updated_at': _date,
+        'timestamp': _timestamp
+      };
+      await ref.set(_productData);
   }
 
   clearTextFeilds() {
@@ -106,9 +134,6 @@ class _UploadProductsState extends State<UploadProducts> {
     sellerContact.clear();
     usersSelection.clear();
     priceCtrl.clear();
-    image1Ctrl.clear();
-    image2Ctrl.clear();
-    image3Ctrl.clear();
     FocusScope.of(context).unfocus();
   }
 
@@ -120,7 +145,7 @@ class _UploadProductsState extends State<UploadProducts> {
             context,
             productNameCtrl.text,
             productDetailCtrl.text,
-            image1Ctrl.text,
+            "",
             sellerContact.text,
             statusSelection,
             'Now',
@@ -194,69 +219,98 @@ class _UploadProductsState extends State<UploadProducts> {
               SizedBox(
                 height: 20,
               ),
-                            TextButton(
+              Container(
+                height: 150,
+                width: MediaQuery.of(context).size.width,
+                child: CustomCacheImage(
+                    imageUrl: "", radius: 0.0)
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextButton(
+                style: buttonStyleIMG(Colors.grey[200]),
                 onPressed: () async {
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles();
+                  FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
 
-                  if (result != null) {
-                    Uint8List? file = result.files.first.bytes;
-                    String fileName = result.files.first.name;
-
-                    UploadTask task = FirebaseStorage.instance
-                        .ref()
-                        .child("files/$_timestamp-$fileName")
-                        .putData(file!);
-
-                    // task.snapshotEvents.listen((event) {
-                    //   setState(() {
-                    //     progress = ((event.bytesTransferred.toDouble() /
-                    //                 event.totalBytes.toDouble()) *
-                    //             100)
-                    //         .roundToDouble();
-
-                    //         print(progress);
-                    //   });
-                    // });
+                  if (thumbnailResult != null) {
+                    if(thumbnailResult.files.first.size > 1200000){
+                      openDialog(context, "Image Too Large", "");
+                    } else {
+                      thumbnail = thumbnailResult.files.first.bytes;
+                      thumbnailName = thumbnailResult.files.first.name;
+                    }
                   }
+
                 },
-                child: Text("Upload"),
-              ),
-              SizedBox(
-                height: 50.0,
-              ),
-              TextFormField(
-                decoration: inputDecoration('Enter image url (thumbnail)',
-                    'Image1(Thumbnail)', image1Ctrl),
-                controller: image1Ctrl,
-                validator: (value) {
-                  if (value!.isEmpty) return 'Value is empty';
-                  return null;
-                },
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("Upload Thumnail (Image 1)", style: TextStyle(color: Colors.black)),
+                ),
               ),
               SizedBox(
                 height: 20,
               ),
-              TextFormField(
-                decoration:
-                    inputDecoration('Enter image url', 'Image2', image2Ctrl),
-                controller: image2Ctrl,
-                validator: (value) {
-                  if (value!.isEmpty) return 'Value is empty';
-                  return null;
-                },
+              Container(
+                height: 150,
+                width: MediaQuery.of(context).size.width,
+                child: CustomCacheImage(
+                    imageUrl: "", radius: 0.0)
               ),
               SizedBox(
                 height: 20,
               ),
-              TextFormField(
-                decoration:
-                    inputDecoration('Enter image url', 'Image3', image3Ctrl),
-                controller: image3Ctrl,
-                validator: (value) {
-                  if (value!.isEmpty) return 'Value is empty';
-                  return null;
+              TextButton(
+                style: buttonStyleIMG(Colors.grey[200]),
+                onPressed: () async {
+                  FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
+
+                  if (thumbnailResult != null) {
+                    if(thumbnailResult.files.first.size > 1200000){
+                      openDialog(context, "Image Too Large", "");
+                    } else {
+                      img1 = thumbnailResult.files.first.bytes;
+                      img1Name = thumbnailResult.files.first.name;
+                    }
+                  }
+
                 },
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("Upload Image 2", style: TextStyle(color: Colors.black)),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                height: 150,
+                width: MediaQuery.of(context).size.width,
+                child: CustomCacheImage(
+                    imageUrl: "", radius: 0.0)
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextButton(
+                style: buttonStyleIMG(Colors.grey[200]),
+                onPressed: () async {
+                  FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
+
+                  if (thumbnailResult != null) {
+                    if(thumbnailResult.files.first.size > 1200000){
+                      openDialog(context, "Image Too Large", "");
+                    } else {
+                      img2 = thumbnailResult.files.first.bytes;
+                      img2Name = thumbnailResult.files.first.name;
+                    }
+                  }
+
+                },
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("Upload Image 3", style: TextStyle(color: Colors.black)),
+                ),
               ),
               SizedBox(
                 height: 20,

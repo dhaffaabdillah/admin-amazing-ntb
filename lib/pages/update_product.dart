@@ -1,11 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:admin/blocs/admin_bloc.dart';
 import 'package:admin/models/blog.dart';
 import 'package:admin/models/product.dart';
+import 'package:admin/utils/cached_image.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/styles.dart';
 import 'package:admin/widgets/product_preview.dart';
 import 'package:admin/widgets/cover_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -27,9 +32,10 @@ class _UpdateProductState extends State<UpdateProduct> {
   var productDetailCtrl = TextEditingController();
   var sellerContact = TextEditingController();
   var priceCtrl = TextEditingController();
-  var image1Ctrl = TextEditingController();
-  var image2Ctrl = TextEditingController();
-  var image3Ctrl = TextEditingController();
+
+  Uint8List? thumbnail, img1, img2;
+  String thumbnailName = "", img1Name = "", img2Name = "";
+  String oldThumbnailName = "", oldImg1Name = "", oldImg2Name = "";
 
   var statusSelection;
 
@@ -40,12 +46,15 @@ class _UpdateProductState extends State<UpdateProduct> {
   String created_at= "";
 
   String? _date;
+  String? _timestamp;
 
   Future getDate() async {
     DateTime now = DateTime.now();
     String _d = DateFormat('dd MMMM yy').format(now);
+    String _t = DateFormat('yyyyMMddHHmmss').format(now);
     setState(() {
       _date = _d;
+      _timestamp = _t;
     });
   }
 
@@ -65,17 +74,38 @@ class _UpdateProductState extends State<UpdateProduct> {
     }
   }
 
+  String setImg(String newImgFile, String oldImgFile, Uint8List? fileBytes){
+      if(newImgFile.length > 0){
+          String waktu = _timestamp.toString();
+
+          // FirebaseStorage.instance.refFromURL(oldImgFile).delete();
+          FirebaseStorage.instance
+                  .ref()
+                  .child("files/$waktu-thumbnail-$newImgFile")
+                  .putData(fileBytes!);
+
+          newImgFile = "https://firebasestorage.googleapis.com/v0/b/dev-admin-amazing-ntb.appspot.com/o/files%2F$waktu-thumbnail-$newImgFile?alt=media";
+          return newImgFile;
+      } else {
+        return oldImgFile;
+      }
+  }
+
   Future updateDatabase() async {
-    final DocumentReference ref =
-        firestore.collection('product').doc(widget.productData.timestamp);
+    final DocumentReference ref = firestore.collection('product').doc(widget.productData.timestamp);
+
+    String thumb = setImg(thumbnailName, oldThumbnailName, thumbnail);
+    String im1 = setImg(img1Name, oldImg1Name, img1);
+    String im2 = setImg(img2Name, oldImg2Name, img2);
+
     var _productData = {
       'productName': productNameCtrl.text,
       'productDetail': productDetailCtrl.text,
       'phone': sellerContact.text,
       'price': priceCtrl.text,
-      'image-1': image1Ctrl.text,
-      'image-2': image2Ctrl.text,
-      'image-3': image3Ctrl.text,
+      'image-1': thumb,
+      'image-2': im1,
+      'image-3': im2,
       'status': statusSelection,
       'updated_at': _date,
     };
@@ -87,9 +117,6 @@ class _UpdateProductState extends State<UpdateProduct> {
     productDetailCtrl.clear();
     sellerContact.clear();
     priceCtrl.clear();
-    image1Ctrl.clear();
-    image2Ctrl.clear();
-    image3Ctrl.clear();
     FocusScope.of(context).unfocus();
   }
 
@@ -100,7 +127,7 @@ class _UpdateProductState extends State<UpdateProduct> {
           context,
           productNameCtrl.text,
           productDetailCtrl.text,
-          image1Ctrl.text,
+          oldThumbnailName,
           sellerContact.text,
           statusSelection,
           created_at,
@@ -114,9 +141,9 @@ class _UpdateProductState extends State<UpdateProduct> {
     productDetailCtrl.text = d.productDetails!;
     sellerContact.text = d.phone!;
     priceCtrl.text = d.price!;
-    image1Ctrl.text = d.image1!;
-    image2Ctrl.text = d.image2!;
-    image3Ctrl.text = d.image3!;
+    oldThumbnailName = d.image1!;
+    oldImg1Name = d.image2!;
+    oldImg2Name = d.image3!;
     statusSelection = d.status!;
     created_at = d.created_at!;
   }
@@ -191,38 +218,98 @@ class _UpdateProductState extends State<UpdateProduct> {
                   SizedBox(
                     height: 20,
                   ),
-                  TextFormField(
-                    decoration: inputDecoration('Enter image url (thumbnail)',
-                        'Image1(Thumbnail)', image1Ctrl),
-                    controller: image1Ctrl,
-                    validator: (value) {
-                      if (value!.isEmpty) return 'Value is empty';
-                      return null;
-                    },
+                  Container(
+                    height: 150,
+                    width: MediaQuery.of(context).size.width,
+                    child: CustomCacheImage(
+                        imageUrl: oldThumbnailName, radius: 0.0)
                   ),
                   SizedBox(
                     height: 20,
                   ),
-                  TextFormField(
-                    decoration: inputDecoration(
-                        'Enter image url', 'Image2', image2Ctrl),
-                    controller: image2Ctrl,
-                    validator: (value) {
-                      if (value!.isEmpty) return 'Value is empty';
-                      return null;
+                  TextButton(
+                    style: buttonStyleIMG(Colors.grey[200]),
+                    onPressed: () async {
+                      FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
+
+                      if (thumbnailResult != null) {
+                        if(thumbnailResult.files.first.size > 1200000){
+                          openDialog(context, "Image Too Large", "");
+                        } else {
+                          thumbnail = thumbnailResult.files.first.bytes;
+                          thumbnailName = thumbnailResult.files.first.name;
+                        }
+                      }
+
                     },
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Upload Thumnail (Image 1)", style: TextStyle(color: Colors.black)),
+                    ),
                   ),
                   SizedBox(
                     height: 20,
                   ),
-                  TextFormField(
-                    decoration: inputDecoration(
-                        'Enter image url', 'Image3', image3Ctrl),
-                    controller: image3Ctrl,
-                    validator: (value) {
-                      if (value!.isEmpty) return 'Value is empty';
-                      return null;
+                  Container(
+                    height: 150,
+                    width: MediaQuery.of(context).size.width,
+                    child: CustomCacheImage(
+                        imageUrl: oldImg1Name, radius: 0.0)
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextButton(
+                    style: buttonStyleIMG(Colors.grey[200]),
+                    onPressed: () async {
+                      FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
+
+                      if (thumbnailResult != null) {
+                        if(thumbnailResult.files.first.size > 1200000){
+                          openDialog(context, "Image Too Large", "");
+                        } else {
+                          img1 = thumbnailResult.files.first.bytes;
+                          img1Name = thumbnailResult.files.first.name;
+                        }
+                      }
+
                     },
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Upload Image 2", style: TextStyle(color: Colors.black)),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    height: 150,
+                    width: MediaQuery.of(context).size.width,
+                    child: CustomCacheImage(
+                        imageUrl: oldImg2Name, radius: 0.0)
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextButton(
+                    style: buttonStyleIMG(Colors.grey[200]),
+                    onPressed: () async {
+                      FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
+
+                      if (thumbnailResult != null) {
+                        if(thumbnailResult.files.first.size > 1200000){
+                          openDialog(context, "Image Too Large", "");
+                        } else {
+                          img2 = thumbnailResult.files.first.bytes;
+                          img2Name = thumbnailResult.files.first.name;
+                        }
+                      }
+
+                    },
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Upload Image 3", style: TextStyle(color: Colors.black)),
+                    ),
                   ),
                   SizedBox(
                     height: 20,
