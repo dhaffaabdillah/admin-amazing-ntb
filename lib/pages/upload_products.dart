@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:admin/blocs/admin_bloc.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/styles.dart';
 import 'package:admin/widgets/product_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +27,7 @@ class _UploadProductsState extends State<UploadProducts> {
   var productNameCtrl = TextEditingController();
   var productDetailCtrl = TextEditingController();
   var sellerContact = TextEditingController();
+  var priceCtrl = TextEditingController();
   var image1Ctrl = TextEditingController();
   var image2Ctrl = TextEditingController();
   var image3Ctrl = TextEditingController();
@@ -83,6 +88,7 @@ class _UploadProductsState extends State<UploadProducts> {
       'productDetail': productDetailCtrl.text,
       'email': usersSelection.text,
       'phone': sellerContact.text,
+      'price': priceCtrl.text,
       'image-1': image1Ctrl.text,
       'image-2': image2Ctrl.text,
       'image-3': image3Ctrl.text,
@@ -99,6 +105,7 @@ class _UploadProductsState extends State<UploadProducts> {
     productDetailCtrl.clear();
     sellerContact.clear();
     usersSelection.clear();
+    priceCtrl.clear();
     image1Ctrl.clear();
     image2Ctrl.clear();
     image3Ctrl.clear();
@@ -116,7 +123,8 @@ class _UploadProductsState extends State<UploadProducts> {
             image1Ctrl.text,
             sellerContact.text,
             statusSelection,
-            'Now');
+            'Now',
+            priceCtrl.text,);
       });
     }
   }
@@ -172,6 +180,50 @@ class _UploadProductsState extends State<UploadProducts> {
               ),
               SizedBox(
                 height: 20,
+              ),
+              TextFormField(
+                decoration: inputDecoration(
+                    'Enter Price', 'Price', priceCtrl),
+                controller: priceCtrl,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value!.isEmpty) return 'Value is empty';
+                  return null;
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+                            TextButton(
+                onPressed: () async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles();
+
+                  if (result != null) {
+                    Uint8List? file = result.files.first.bytes;
+                    String fileName = result.files.first.name;
+
+                    UploadTask task = FirebaseStorage.instance
+                        .ref()
+                        .child("files/$_timestamp-$fileName")
+                        .putData(file!);
+
+                    // task.snapshotEvents.listen((event) {
+                    //   setState(() {
+                    //     progress = ((event.bytesTransferred.toDouble() /
+                    //                 event.totalBytes.toDouble()) *
+                    //             100)
+                    //         .roundToDouble();
+
+                    //         print(progress);
+                    //   });
+                    // });
+                  }
+                },
+                child: Text("Upload"),
+              ),
+              SizedBox(
+                height: 50.0,
               ),
               TextFormField(
                 decoration: inputDecoration('Enter image url (thumbnail)',

@@ -3,6 +3,7 @@ import 'package:admin/config/config.dart';
 import 'package:admin/customized_packages/vertical_tabs.dart';
 import 'package:admin/pages/admin.dart';
 import 'package:admin/pages/blogs.dart';
+import 'package:admin/pages/confirm_seller.dart';
 import 'package:admin/pages/data_info.dart';
 import 'package:admin/pages/featured.dart';
 import 'package:admin/pages/notifications.dart';
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     'Upload Blog',
     'Product',
     'Upload Product',
+    'Confirmation Seller',
     'States',
     'Notifications',
     'Users',
@@ -58,6 +60,7 @@ class _HomePageState extends State<HomePage> {
     LineIcons.arrowCircleUp,
     LineIcons.archive,
     LineIcons.arrowCircleUp,
+    LineIcons.stickyNote,
     LineIcons.mapPin,
     LineIcons.bell,
     LineIcons.users,
@@ -119,7 +122,8 @@ class _HomePageState extends State<HomePage> {
                     tab(titles[9], icons[9]) as Tab,
                     tab(titles[10], icons[10]) as Tab,
                     tab(titles[11], icons[11]) as Tab,
-                    tab(titles[11], icons[12]) as Tab,
+                    tab(titles[12], icons[12]) as Tab,
+                    tab(titles[13], icons[13]) as Tab,
                   ],
                   contents: <Widget>[
                     DataInfoPage(),
@@ -130,6 +134,7 @@ class _HomePageState extends State<HomePage> {
                     CoverWidget(widget: UploadBlog()),
                     CoverWidget(widget: ProductPage()),
                     CoverWidget(widget: UploadProducts()),
+                    CoverWidget(widget: ConfirmSellerPage()),
                     CoverWidget(widget: States()),
                     CoverWidget(widget: Notifications()),
                     CoverWidget(widget: UsersPage()),

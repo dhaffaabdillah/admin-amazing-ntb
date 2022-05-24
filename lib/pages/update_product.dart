@@ -26,6 +26,7 @@ class _UpdateProductState extends State<UpdateProduct> {
   var productNameCtrl = TextEditingController();
   var productDetailCtrl = TextEditingController();
   var sellerContact = TextEditingController();
+  var priceCtrl = TextEditingController();
   var image1Ctrl = TextEditingController();
   var image2Ctrl = TextEditingController();
   var image3Ctrl = TextEditingController();
@@ -36,6 +37,7 @@ class _UpdateProductState extends State<UpdateProduct> {
 
   //bool notifyUsers = true;
   bool uploadStarted = false;
+  String created_at= "";
 
   String? _date;
 
@@ -70,6 +72,7 @@ class _UpdateProductState extends State<UpdateProduct> {
       'productName': productNameCtrl.text,
       'productDetail': productDetailCtrl.text,
       'phone': sellerContact.text,
+      'price': priceCtrl.text,
       'image-1': image1Ctrl.text,
       'image-2': image2Ctrl.text,
       'image-3': image3Ctrl.text,
@@ -83,6 +86,7 @@ class _UpdateProductState extends State<UpdateProduct> {
     productNameCtrl.clear();
     productDetailCtrl.clear();
     sellerContact.clear();
+    priceCtrl.clear();
     image1Ctrl.clear();
     image2Ctrl.clear();
     image3Ctrl.clear();
@@ -99,7 +103,8 @@ class _UpdateProductState extends State<UpdateProduct> {
           image1Ctrl.text,
           sellerContact.text,
           statusSelection,
-          widget.productData.updated_at);
+          created_at,
+          priceCtrl.text);
     }
   }
 
@@ -108,10 +113,12 @@ class _UpdateProductState extends State<UpdateProduct> {
     productNameCtrl.text = d.productName!;
     productDetailCtrl.text = d.productDetails!;
     sellerContact.text = d.phone!;
+    priceCtrl.text = d.price!;
     image1Ctrl.text = d.image1!;
     image2Ctrl.text = d.image2!;
     image3Ctrl.text = d.image3!;
     statusSelection = d.status!;
+    created_at = d.created_at!;
   }
 
   @override
@@ -162,6 +169,19 @@ class _UpdateProductState extends State<UpdateProduct> {
                     decoration: inputDecoration(
                         'Enter Phone Number', 'Phone', sellerContact),
                     controller: sellerContact,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value!.isEmpty) return 'Value is empty';
+                      return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    decoration: inputDecoration(
+                        'Enter Price', 'Price', priceCtrl),
+                    controller: priceCtrl,
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value!.isEmpty) return 'Value is empty';

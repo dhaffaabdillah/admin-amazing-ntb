@@ -121,7 +121,7 @@ class _ProductPageState extends State<ProductPage> {
 
   handlePreview(ProductModel d) async {
     await showProductPreview(context, d.productName, d.productDetails, d.image1,
-        d.phone, d.status.toString(), d.created_at);
+        d.phone, d.status.toString(), d.created_at, d.price);
   }
 
   reloadData() {

@@ -4,6 +4,7 @@ class ProductModel {
   String? productName;
   String? productDetails;
   String? email;
+  String? price;
   String? phone;
   String? image1;
   String? image2;
@@ -16,6 +17,7 @@ class ProductModel {
   ProductModel({
     this.productName,
     this.productDetails,
+    this.price,
     this.email,
     this.phone,
     this.image1,
@@ -33,6 +35,7 @@ class ProductModel {
       productName: data['productName'],
       productDetails: data['productDetail'],
       email: data['email'],
+      price: data['price'],
       phone: data['phone'],
       image1: data['image-1'],
       image2: data['image-2'],
