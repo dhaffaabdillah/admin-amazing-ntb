@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:admin/blocs/admin_bloc.dart';
+import 'package:admin/constants/constants.dart';
 import 'package:admin/models/blog.dart';
 import 'package:admin/models/product.dart';
 import 'package:admin/utils/cached_image.dart';
@@ -34,7 +35,6 @@ class _UpdateProductState extends State<UpdateProduct> {
   var priceCtrl = TextEditingController();
 
   Uint8List? thumbnail, img1, img2;
-  String thumbnailName = "", img1Name = "", img2Name = "";
   String oldThumbnailName = "", oldImg1Name = "", oldImg2Name = "";
 
   var statusSelection;
@@ -46,15 +46,12 @@ class _UpdateProductState extends State<UpdateProduct> {
   String created_at= "";
 
   String? _date;
-  String? _timestamp;
 
   Future getDate() async {
     DateTime now = DateTime.now();
     String _d = DateFormat('dd MMMM yy').format(now);
-    String _t = DateFormat('yyyyMMddHHmmss').format(now);
     setState(() {
       _date = _d;
-      _timestamp = _t;
     });
   }
 
@@ -74,29 +71,33 @@ class _UpdateProductState extends State<UpdateProduct> {
     }
   }
 
-  String setImg(String newImgFile, String oldImgFile, Uint8List? fileBytes){
-      if(newImgFile.length > 0){
-          String waktu = _timestamp.toString();
+  String setImg(String type, String oldImgFile, Uint8List? fileBytes, String waktu){
 
+      if(oldImgFile.length > 0){
           // FirebaseStorage.instance.refFromURL(oldImgFile).delete();
-          FirebaseStorage.instance
-                  .ref()
-                  .child("files/$waktu-thumbnail-$newImgFile")
-                  .putData(fileBytes!);
 
-          newImgFile = "https://firebasestorage.googleapis.com/v0/b/dev-admin-amazing-ntb.appspot.com/o/files%2F$waktu-thumbnail-$newImgFile?alt=media";
-          return newImgFile;
-      } else {
-        return oldImgFile;
-      }
+          if(fileBytes != null){
+              FirebaseStorage.instance
+                .ref()
+                .child("files/$waktu-$type")
+                .putData(fileBytes!);
+
+                return Constants.logPath + "$waktu-$type?alt=media";
+          }
+
+      } 
+
+       return oldImgFile;
+
   }
 
   Future updateDatabase() async {
     final DocumentReference ref = firestore.collection('product').doc(widget.productData.timestamp);
+    String waktu = widget.productData.timestamp.toString();
 
-    String thumb = setImg(thumbnailName, oldThumbnailName, thumbnail);
-    String im1 = setImg(img1Name, oldImg1Name, img1);
-    String im2 = setImg(img2Name, oldImg2Name, img2);
+    String thumb = setImg("thumbnail", oldThumbnailName, thumbnail,waktu);
+    String im1 = setImg("img1", oldImg1Name, img1, waktu);
+    String im2 = setImg("img2", oldImg2Name, img2, waktu);
 
     var _productData = {
       'productName': productNameCtrl.text,
@@ -154,9 +155,29 @@ class _UpdateProductState extends State<UpdateProduct> {
     initBlogData();
   }
 
+  FilePickerResult? ImgSecure(FilePickerResult? thumbnailResult, String typeImg){
+    if (thumbnailResult != null) {
+
+      String extension = thumbnailResult.files.first.extension.toString(); 
+
+      if(thumbnailResult.files.first.size > 1200000){
+        openDialog(context, typeImg, "");
+      } else {
+
+        if(extension == "jpg" || extension == "jpeg" || extension == "png"){
+            return thumbnailResult;
+        } else {
+          openDialog(context, "File Type Doesn`t Allowed", "");
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
+    getDate();
+
     return Scaffold(
         appBar: AppBar(),
         key: scaffoldKey,
@@ -230,15 +251,10 @@ class _UpdateProductState extends State<UpdateProduct> {
                   TextButton(
                     style: buttonStyleIMG(Colors.grey[200]),
                     onPressed: () async {
-                      FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
+                    FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Thumbnail Image Too Large");
 
-                      if (thumbnailResult != null) {
-                        if(thumbnailResult.files.first.size > 1200000){
-                          openDialog(context, "Image Too Large", "");
-                        } else {
-                          thumbnail = thumbnailResult.files.first.bytes;
-                          thumbnailName = thumbnailResult.files.first.name;
-                        }
+                      if (successSecure != null) {
+                        thumbnail = successSecure.files.first.bytes;
                       }
 
                     },
@@ -262,15 +278,10 @@ class _UpdateProductState extends State<UpdateProduct> {
                   TextButton(
                     style: buttonStyleIMG(Colors.grey[200]),
                     onPressed: () async {
-                      FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
+                      FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Second Image Too Large");
 
-                      if (thumbnailResult != null) {
-                        if(thumbnailResult.files.first.size > 1200000){
-                          openDialog(context, "Image Too Large", "");
-                        } else {
-                          img1 = thumbnailResult.files.first.bytes;
-                          img1Name = thumbnailResult.files.first.name;
-                        }
+                      if (successSecure != null) {
+                        img1 = successSecure.files.first.bytes;
                       }
 
                     },
@@ -294,16 +305,11 @@ class _UpdateProductState extends State<UpdateProduct> {
                   TextButton(
                     style: buttonStyleIMG(Colors.grey[200]),
                     onPressed: () async {
-                      FilePickerResult? thumbnailResult = await FilePicker.platform.pickFiles();
+                        FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Third Image Too Large");
 
-                      if (thumbnailResult != null) {
-                        if(thumbnailResult.files.first.size > 1200000){
-                          openDialog(context, "Image Too Large", "");
-                        } else {
-                          img2 = thumbnailResult.files.first.bytes;
-                          img2Name = thumbnailResult.files.first.name;
+                        if (successSecure != null) {
+                          img2 = successSecure.files.first.bytes;
                         }
-                      }
 
                     },
                     child: Align(

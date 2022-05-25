@@ -17,8 +17,8 @@ class ProductModel {
   ProductModel({
     this.productName,
     this.productDetails,
-    this.price,
     this.email,
+    this.price,
     this.phone,
     this.image1,
     this.image2,
