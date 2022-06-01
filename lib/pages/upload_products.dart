@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:searchfield/searchfield.dart';
@@ -85,24 +86,30 @@ class _UploadProductsState extends State<UploadProducts> {
     });
   }
 
-  // String saveImgToStorage(Uint8List? newBytes, String newThumnailName) {
+
+  // String saveImgToStorage(Uint8List? newBytes, String type) {
   //     String waktu = _timestamp.toString();
 
-  //     Reference storageReference = FirebaseStorage.instance.ref().child("files/$waktu-thumbnail-$newThumnailName");
-  //     UploadTask uploadTask = storageReference.putData(newBytes!);
-  //     String path = "";
+  //     Reference storageReference = FirebaseStorage.instance.ref().child("files/$waktu-$type");
 
-  //     uploadTask.whenComplete(() {
-  //       var _url = storageReference.getDownloadURL();
-  //       var _imageUrl = _url.toString();
-        
-  //       setState(() {
-  //         path = _imageUrl;
+  //     if(newBytes != null){
+  //       UploadTask uploadTask = storageReference.putData(newBytes!);
+
+  //       uploadTask.whenComplete(() {
+  //         var _url = storageReference.getDownloadURL();
+  //         var _imageUrl = _url.toString();
+          
+  //         setState(() {
+  //           path = _imageUrl;
+  //         });
   //       });
 
-  //     });
+  //       return path;
 
-  //     return path;
+  //     } else {
+  //       return Constants.defaultPath;
+  //     }
+
 
   // }
 
@@ -110,9 +117,9 @@ class _UploadProductsState extends State<UploadProducts> {
     final DocumentReference ref =
         firestore.collection('product').doc(_timestamp);
 
-        // String path1 = saveImgToStorage(thumbnail, thumbnailName);
-        // String path2 = saveImgToStorage(img1, img1Name);
-        // String path3 = saveImgToStorage(img2, img2Name);
+        // String path1 = saveImgToStorage(thumbnail, "thumbnail");
+        // String path2 = saveImgToStorage(img1, "img1");
+        // String path3 = saveImgToStorage(img2, "img2");
         
         String waktu = _timestamp.toString();
 
@@ -162,6 +169,9 @@ class _UploadProductsState extends State<UploadProducts> {
     sellerContact.clear();
     usersSelection.clear();
     priceCtrl.clear();
+    thumbnail = null;
+    img1 = null;
+    img2 = null;
     FocusScope.of(context).unfocus();
   }
 
@@ -191,11 +201,11 @@ class _UploadProductsState extends State<UploadProducts> {
         openDialog(context, typeImg, "");
       } else {
 
-        if(extension == "jpg" || extension == "jpeg" || extension == "png"){
-            return thumbnailResult;
-        } else {
-          openDialog(context, "File Type Doesn`t Allowed", "");
-        }
+        return thumbnailResult;
+        // if(extension == "jpg" || extension == "jpeg" || extension == "png"){
+        // } else {
+        //   openDialog(context, "File Type Doesn`t Allowed", "");
+        // }
       }
     }
   }
@@ -277,7 +287,7 @@ class _UploadProductsState extends State<UploadProducts> {
               TextButton(
                 style: buttonStyleIMG(Colors.grey[200]),
                 onPressed: () async {
-                  FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Thumbnail Image Too Large");
+                  FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(type: FileType.image), "Thumbnail Image Too Large");
 
                   if (successSecure != null) {
                       thumbnail = successSecure.files.first.bytes;
@@ -304,7 +314,7 @@ class _UploadProductsState extends State<UploadProducts> {
               TextButton(
                 style: buttonStyleIMG(Colors.grey[200]),
                 onPressed: () async {
-                 FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Second Image Too Large");
+                 FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(type: FileType.image), "Second Image Too Large");
 
                   if (successSecure != null) {
                     img1 = successSecure.files.first.bytes;
@@ -331,7 +341,7 @@ class _UploadProductsState extends State<UploadProducts> {
               TextButton(
                 style: buttonStyleIMG(Colors.grey[200]),
                 onPressed: () async {
-                  FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Third Image Too Large");
+                  FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(type: FileType.image), "Third Image Too Large");
 
                   if (successSecure != null) {
                     img2 = successSecure.files.first.bytes;

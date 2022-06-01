@@ -164,11 +164,11 @@ class _UpdateProductState extends State<UpdateProduct> {
         openDialog(context, typeImg, "");
       } else {
 
-        if(extension == "jpg" || extension == "jpeg" || extension == "png"){
-            return thumbnailResult;
-        } else {
-          openDialog(context, "File Type Doesn`t Allowed", "");
-        }
+        return thumbnailResult;
+        // if(extension == "jpg" || extension == "jpeg" || extension == "png"){
+        // } else {
+        //   openDialog(context, "File Type Doesn`t Allowed", "");
+        // }
       }
     }
   }
@@ -251,7 +251,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                   TextButton(
                     style: buttonStyleIMG(Colors.grey[200]),
                     onPressed: () async {
-                    FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Thumbnail Image Too Large");
+                    FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(type: FileType.image), "Thumbnail Image Too Large");
 
                       if (successSecure != null) {
                         thumbnail = successSecure.files.first.bytes;
@@ -278,7 +278,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                   TextButton(
                     style: buttonStyleIMG(Colors.grey[200]),
                     onPressed: () async {
-                      FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Second Image Too Large");
+                      FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(type: FileType.image), "Second Image Too Large");
 
                       if (successSecure != null) {
                         img1 = successSecure.files.first.bytes;
@@ -305,7 +305,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                   TextButton(
                     style: buttonStyleIMG(Colors.grey[200]),
                     onPressed: () async {
-                        FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(), "Third Image Too Large");
+                        FilePickerResult? successSecure = ImgSecure(await FilePicker.platform.pickFiles(type: FileType.image), "Third Image Too Large");
 
                         if (successSecure != null) {
                           img2 = successSecure.files.first.bytes;

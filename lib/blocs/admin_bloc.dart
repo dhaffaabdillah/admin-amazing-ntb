@@ -1,6 +1,7 @@
 
 import 'package:admin/utils/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -211,6 +212,9 @@ class AdminBloc extends ChangeNotifier {
 
 
   Future deleteContent(timestamp, String collectionName) async {
+    // String thumbnailImg = FirebaseStorage.instance.ref().child("files/$timestamp-thumbnail").getDownloadURL().toString();
+    // String Img1 = FirebaseStorage.instance.ref().child("files/$timestamp-img1").getDownloadURL().toString();
+    // String Img2 = FirebaseStorage.instance.ref().child("files/$timestamp-img2").getDownloadURL().toString();
     await firestore.collection(collectionName).doc(timestamp).delete();
     notifyListeners();
   }
