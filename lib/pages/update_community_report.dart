@@ -36,9 +36,7 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
   var institution = TextEditingController();
 
   String? image_1, image_2, image_3;
-
   var statusSelection;
-
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   //bool notifyUsers = true;
@@ -72,11 +70,10 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
   }
 
   Future updateDatabase() async {
-    final DocumentReference ref = firestore.collection('community_report').doc(widget.CommunityReportData.timestamp);
-    String waktu = widget.CommunityReportData.timestamp.toString();
+    final DocumentReference ref = firestore.collection('reports').doc(widget.CommunityReportData.timestamp);
 
     var _productData = {
-      'institution': institution,
+      'institution': institution.text,
       'status': statusSelection,
       'updated_at': _date,
     };
@@ -109,7 +106,7 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
     institution.text = d.institution!;
     image_1 = d.image1!;
     image_2 = d.image2!;
-    image_2 = d.image3!;
+    image_3 = d.image3!;
     statusSelection = d.status!;
     created_at = d.created_at!;
   }
@@ -268,7 +265,7 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
                             )
                           : TextButton(
                               child: Text(
-                                'Update Community',
+                                'Update Reports',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -285,10 +282,20 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
         ));
   }
 
-  Widget statusDropdown() {
-    // final AdminBloc ab = Provider.of(context, listen: false);
+  String selectStatusSelection(int newStatus){
+    String returnStatus = "";
 
-    List<String> ab = ["Belum Di Review", "Sudah Di Review", "Proses Pengerjaan"];
+    returnStatus = newStatus == 0 ? "Belum Di Review" : "Sudah Di Preview";
+
+    if(newStatus == 2){
+      returnStatus = "Proses Pengerjaan";
+    }
+
+    return returnStatus;
+  }
+
+  Widget statusDropdown() {
+    List<int> ab = [0, 1, 2];
 
     return Container(
         height: 50,
@@ -314,7 +321,7 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
             hint: Text('Select Status'),
             items: ab.map((f) {
               return DropdownMenuItem(
-                child: Text(f),
+                child: Text(selectStatusSelection(f)),
                 value: f,
               );
             }).toList()));

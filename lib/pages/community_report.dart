@@ -35,7 +35,7 @@ class _CommunityReportPageState extends State<CommunityReportPage> {
   List<DocumentSnapshot> _snap = [];
   List<CommunityReportModel> _data = [];
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String collectionName = 'community_report';
+  String collectionName = 'reports';
 
   late bool _descending;
   late String _orderBy;
@@ -124,7 +124,7 @@ class _CommunityReportPageState extends State<CommunityReportPage> {
 
   handlePreview(CommunityReportModel d) async {
     await showCommunityReportPreview(context, d.report_title, d.report_desc, d.image1,
-        d.institution, d.status.toString(), d.created_at);
+        d.institution, d.status, d.created_at);
   }
 
   reloadData() {

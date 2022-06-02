@@ -2,21 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CommunityReportModel {
   String? report_id;
-  String? author_id;
+  String? author;
   String? institution;
   String? report_title;
   String? report_desc;
   String? image1;
   String? image2;
   String? image3;
-  String? status;
+  int? status;
   String? created_at;
   String? updated_at;
   String? timestamp;
   
   CommunityReportModel({
     this.report_id,
-    this.author_id,
+    this.author,
     this.institution,
     this.report_title,
     this.report_desc,
@@ -33,10 +33,10 @@ class CommunityReportModel {
     Map data = snapshot.data() as Map<dynamic, dynamic>;
     return CommunityReportModel(
       report_id: data['report_id'],
-      author_id: data['author_id'],
+      author: data['author'],
       institution: data['institution'],
       report_title: data['report_title'],
-      report_desc: data['report_desc'],
+      report_desc: data['report_description'],
       image1: data['image-1'],
       image2: data['image-2'],
       image3: data['image-3'],
@@ -50,7 +50,7 @@ class CommunityReportModel {
   Map<String, dynamic> toJson() {
     return {
       'report_id': report_id,
-      'author_id': author_id,
+      'author': author,
       'institution': institution,
       'report_title': report_title,
       'report_desc': report_desc,

@@ -6,8 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+String statusSelection(int newStatus){
+
+  String returnStatus = "";
+
+  returnStatus = newStatus == 0 ? "Belum Di Review" : "Sudah Di Preview";
+
+  if(newStatus == 2){
+    returnStatus = "Proses Pengerjaan";
+  }
+
+  return returnStatus;
+}
+
 Future showCommunityReportPreview(context, String? title, String? description,
-    String? thumbnailUrl, String? Phone, String status, String? date) async {
+    String? thumbnailUrl, String? Phone, int? status, String? date) async {
   showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -54,7 +67,7 @@ Future showCommunityReportPreview(context, String? title, String? description,
                                 // await launch(status!);
                               },
                               child: Text(
-                                status,
+                                statusSelection(status!),
                                 style: TextStyle(color: Colors.grey[900]),
                               ))
                         ],
