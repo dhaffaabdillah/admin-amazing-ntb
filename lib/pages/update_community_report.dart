@@ -171,7 +171,7 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
                     height: 20,
                   ),
                   Container(
-                    height: 150,
+                    height: 250,
                     width: MediaQuery.of(context).size.width,
                     child: CustomCacheImage(
                         imageUrl: image_1, radius: 0.0)
@@ -180,7 +180,7 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
                     height: 20,
                   ),
                   Container(
-                    height: 150,
+                    height: 250,
                     width: MediaQuery.of(context).size.width,
                     child: CustomCacheImage(
                         imageUrl: image_2, radius: 0.0)
@@ -189,7 +189,7 @@ class _UpdateCommunityReportState extends State<UpdateCommunityReport> {
                     height: 20,
                   ),
                   Container(
-                    height: 150,
+                    height: 250,
                     width: MediaQuery.of(context).size.width,
                     child: CustomCacheImage(
                         imageUrl: image_3, radius: 0.0)
