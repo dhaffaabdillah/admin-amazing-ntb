@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 showPlacePreview(
     context,
     String name,
+    String categori,
     String location,
     String imageUrl_1,
     String description,
@@ -57,13 +58,36 @@ showPlacePreview(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        name,
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black),
+                      
+                    Row(
+                        children: <Widget>[
+                          Text(
+                            name,
+                            style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black),
+                          ),
+
+                          Container(
+                            margin: EdgeInsets.only(left: 10, right: 10),
+                            height: 3,
+                            width: 25,
+                            decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+
+                          Text(
+                           categori,
+                            style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black),
+                          ),
+                        ],
                       ),
+
                       Container(
                         margin: EdgeInsets.only(top: 5, bottom: 10),
                         height: 3,

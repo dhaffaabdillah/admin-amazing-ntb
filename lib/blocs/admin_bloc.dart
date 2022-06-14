@@ -15,6 +15,9 @@ class AdminBloc extends ChangeNotifier {
 
   List _states = [];
   List get states => _states;
+ 
+  List _categories = [];
+  List get categories => _categories;
 
   List _users = [];
   List get users => _users;
@@ -132,12 +135,23 @@ class AdminBloc extends ChangeNotifier {
 
 
 
-  Future getStates ()async{
+  Future getStates () async{
     QuerySnapshot snap = await firestore.collection('states').get();
     List d = snap.docs;
     _states.clear();
     d.forEach((element) {
       _states.add(element['name']);
+    });
+    notifyListeners();
+    
+  }
+
+  Future getCategories () async{
+    QuerySnapshot snap = await firestore.collection('categories').get();
+    List d = snap.docs;
+    _categories.clear();
+    d.forEach((element) {
+      _categories.add(element['title']);
     });
     notifyListeners();
     

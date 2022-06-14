@@ -80,7 +80,7 @@ class _UpdateProductState extends State<UpdateProduct> {
               FirebaseStorage.instance
                 .ref()
                 .child("files/$waktu-$type")
-                .putData(fileBytes!);
+                .putData(fileBytes);
 
                 return Constants.logPath + "$waktu-$type?alt=media";
           }
@@ -136,7 +136,7 @@ class _UpdateProductState extends State<UpdateProduct> {
     }
   }
 
-  initBlogData() {
+  initProductData() {
     ProductModel d = widget.productData;
     productNameCtrl.text = d.productName!;
     productDetailCtrl.text = d.productDetails!;
@@ -152,7 +152,7 @@ class _UpdateProductState extends State<UpdateProduct> {
   @override
   void initState() {
     super.initState();
-    initBlogData();
+    initProductData();
   }
 
   FilePickerResult? ImgSecure(FilePickerResult? thumbnailResult, String typeImg){

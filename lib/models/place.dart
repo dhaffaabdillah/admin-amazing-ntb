@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Place {
   String? state;
   String? name;
+  String? category;
   String? location;
   double? latitude;
   double? longitude;
@@ -19,6 +20,7 @@ class Place {
   Place({
     this.state,
     this.name,
+    this.category,
     this.location,
     this.latitude,
     this.longitude,
@@ -39,6 +41,7 @@ class Place {
     return Place(
       state: d['state'],
       name: d['place name'],
+      category: d['category'],
       location: d['location'],
       latitude: d['latitude'],
       longitude: d['longitude'],

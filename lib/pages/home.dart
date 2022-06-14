@@ -89,6 +89,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     Future.delayed(Duration(milliseconds: 0)).then((value) {
       context.read<AdminBloc>().getStates();
+      context.read<AdminBloc>().getCategories();
       context.read<AdminBloc>().getUsers();
       context.read<AdminBloc>().getAdsData();
     });

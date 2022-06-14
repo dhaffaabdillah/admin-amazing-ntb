@@ -1,6 +1,7 @@
 import 'package:admin/blocs/admin_bloc.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/snacbar.dart';
+import 'package:admin/utils/string_extension.dart';
 import 'package:admin/utils/styles.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/widgets/place_preview.dart';
@@ -31,6 +32,7 @@ class _UploadPlaceState extends State<UploadPlace> {
       'Enter paths list to help users to go to the desired destination like : Dhaka to Sylhet by Bus - 200Tk.....';
 
   var stateSelection;
+  var categoryNameSelection;
 
   var nameCtrl = TextEditingController();
   var locationCtrl = TextEditingController();
@@ -79,6 +81,8 @@ class _UploadPlaceState extends State<UploadPlace> {
 
     if (stateSelection == null) {
       openDialog(context, 'Select State First', '');
+    } else if(categoryNameSelection == null){
+      openDialog(context, 'Select Category First', '');
     } else {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
@@ -125,6 +129,7 @@ class _UploadPlaceState extends State<UploadPlace> {
     var _placeData = {
       'state': stateSelection,
       'place name': nameCtrl.text,
+      'category': categoryNameSelection,
       'location': locationCtrl.text,
       'latitude': double.parse(latCtrl.text),
       'longitude': double.parse(lngCtrl.text),
@@ -159,6 +164,7 @@ class _UploadPlaceState extends State<UploadPlace> {
         showPlacePreview(
             context,
             nameCtrl.text,
+            StringExtension.capitalize(categoryNameSelection),
             locationCtrl.text,
             image1Ctrl.text,
             descriptionCtrl.text,
@@ -200,6 +206,10 @@ class _UploadPlaceState extends State<UploadPlace> {
               statesDropdown(),
               SizedBox(
                 height: 20,
+              ),
+              categoriesNameDropdown(),
+                SizedBox(
+                  height: 20,
               ),
               TextFormField(
                 decoration:
@@ -598,6 +608,39 @@ class _UploadPlaceState extends State<UploadPlace> {
             items: ab.states.map((f) {
               return DropdownMenuItem(
                 child: Text(f),
+                value: f,
+              );
+            }).toList()));
+  }
+
+   Widget categoriesNameDropdown() {
+    final AdminBloc ab = Provider.of(context, listen: false);
+
+    return Container(
+        height: 50,
+        padding: EdgeInsets.only(left: 15, right: 15),
+        decoration: BoxDecoration(
+            color: Colors.grey[200],
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(30)),
+        child: DropdownButtonFormField(
+            itemHeight: 50,
+            decoration: InputDecoration(border: InputBorder.none),
+            onChanged: (dynamic value) {
+              setState(() {
+                categoryNameSelection = value;
+              });
+            },
+            onSaved: (dynamic value) {
+              setState(() {
+                categoryNameSelection = value;
+              });
+            },
+            value: categoryNameSelection,
+            hint: Text('Select Category Name'),
+            items: ab.categories.map((f) {
+              return DropdownMenuItem(
+                child: Text(StringExtension.capitalize(f)),
                 value: f,
               );
             }).toList()));

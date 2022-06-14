@@ -2,13 +2,16 @@ import 'package:admin/blocs/admin_bloc.dart';
 import 'package:admin/models/place.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/snacbar.dart';
+import 'package:admin/utils/string_extension.dart';
 import 'package:admin/utils/styles.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/widgets/cover_widget.dart';
 import 'package:admin/widgets/place_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
+// import 'package:strings/strings.dart';
 
 class UpdatePlace extends StatefulWidget {
   final Place placeData;
@@ -31,6 +34,7 @@ class _UpdatePlaceState extends State<UpdatePlace> {
   var stateSelection;
 
   var nameCtrl = TextEditingController();
+  var categoryNameSelection;
   var locationCtrl = TextEditingController();
   var descriptionCtrl = TextEditingController();
   var image1Ctrl = TextEditingController();
@@ -73,6 +77,8 @@ class _UpdatePlaceState extends State<UpdatePlace> {
     final AdminBloc ab = Provider.of<AdminBloc>(context, listen: false);
     if (stateSelection == null) {
       openDialog(context, 'Select City First', '');
+    } else if(categoryNameSelection == null) {
+      openDialog(context, 'Select Category First', '');
     } else {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
@@ -106,6 +112,7 @@ class _UpdatePlaceState extends State<UpdatePlace> {
     var _placeData = {
       'state': stateSelection,
       'place name': nameCtrl.text,
+      'category': categoryNameSelection,
       'location': locationCtrl.text,
       'latitude': double.parse(latCtrl.text),
       'longitude': double.parse(lngCtrl.text),
@@ -153,6 +160,7 @@ class _UpdatePlaceState extends State<UpdatePlace> {
 
   initData() {
     stateSelection = widget.placeData.state;
+    categoryNameSelection = widget.placeData.category;
     nameCtrl.text = widget.placeData.name!;
     locationCtrl.text = widget.placeData.location!;
     descriptionCtrl.text = widget.placeData.description!;
@@ -177,6 +185,7 @@ class _UpdatePlaceState extends State<UpdatePlace> {
         showPlacePreview(
             context,
             nameCtrl.text,
+            StringExtension.capitalize(categoryNameSelection),
             locationCtrl.text,
             image1Ctrl.text,
             descriptionCtrl.text,
@@ -219,6 +228,10 @@ class _UpdatePlaceState extends State<UpdatePlace> {
                   height: 20,
                 ),
                 statesDropdown(),
+                SizedBox(
+                  height: 20,
+                ),
+                categoriesNameDropdown(),
                 SizedBox(
                   height: 20,
                 ),
@@ -623,6 +636,39 @@ class _UpdatePlaceState extends State<UpdatePlace> {
             items: ab.states.map((f) {
               return DropdownMenuItem(
                 child: Text(f),
+                value: f,
+              );
+            }).toList()));
+  }
+
+  Widget categoriesNameDropdown() {
+    final AdminBloc ab = Provider.of(context, listen: false);
+
+    return Container(
+        height: 50,
+        padding: EdgeInsets.only(left: 15, right: 15),
+        decoration: BoxDecoration(
+            color: Colors.grey[200],
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(30)),
+        child: DropdownButtonFormField(
+            itemHeight: 50,
+            decoration: InputDecoration(border: InputBorder.none),
+            onChanged: (dynamic value) {
+              setState(() {
+                categoryNameSelection = value;
+              });
+            },
+            onSaved: (dynamic value) {
+              setState(() {
+                categoryNameSelection = value;
+              });
+            },
+            value: categoryNameSelection,
+            hint: Text('Select Category Name'),
+            items: ab.categories.map((f) {
+              return DropdownMenuItem(
+                child: Text(StringExtension.capitalize(f)),
                 value: f,
               );
             }).toList()));
