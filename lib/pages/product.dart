@@ -178,7 +178,7 @@ class _ProductPageState extends State<ProductPage> {
                             'Only admin can delete contents');
                       } else {
                         await ab
-                            .deleteContent(timestamp, 'product')
+                            .deleteProductContent(timestamp, 'product')
                             .then((value) => ab.decreaseCount('products_count'))
                             .then((value) => openToast(
                                 context, 'Item deleted successfully!'));

@@ -3,6 +3,7 @@ import 'package:admin/config/config.dart';
 import 'package:admin/customized_packages/vertical_tabs.dart';
 import 'package:admin/pages/admin.dart';
 import 'package:admin/pages/blogs.dart';
+import 'package:admin/pages/category.dart';
 import 'package:admin/pages/community_report.dart';
 import 'package:admin/pages/confirm_seller.dart';
 import 'package:admin/pages/data_info.dart';
@@ -10,6 +11,7 @@ import 'package:admin/pages/featured.dart';
 import 'package:admin/pages/notifications.dart';
 import 'package:admin/pages/places.dart';
 import 'package:admin/pages/product.dart';
+import 'package:admin/pages/upload_categoris.dart';
 import 'package:admin/pages/upload_products.dart';
 import 'package:admin/pages/settings.dart';
 import 'package:admin/pages/sign_in.dart';
@@ -44,6 +46,8 @@ class _HomePageState extends State<HomePage> {
     'Upload Blog',
     'Product',
     'Upload Product',
+    'Categories',
+    'Upload Category',
     'Community Report',
     'Confirmation Seller',
     'States',
@@ -61,6 +65,8 @@ class _HomePageState extends State<HomePage> {
     LineIcons.rocket,
     LineIcons.arrowCircleUp,
     LineIcons.archive,
+    LineIcons.arrowCircleUp,
+    LineIcons.braille,
     LineIcons.arrowCircleUp,
     LineIcons.exclamationCircle,
     LineIcons.stickyNote,
@@ -128,6 +134,8 @@ class _HomePageState extends State<HomePage> {
                     tab(titles[12], icons[12]) as Tab,
                     tab(titles[13], icons[13]) as Tab,
                     tab(titles[14], icons[14]) as Tab,
+                    tab(titles[15], icons[15]) as Tab,
+                    tab(titles[16], icons[16]) as Tab,
                   ],
                   contents: <Widget>[
                     DataInfoPage(),
@@ -138,6 +146,8 @@ class _HomePageState extends State<HomePage> {
                     CoverWidget(widget: UploadBlog()),
                     CoverWidget(widget: ProductPage()),
                     CoverWidget(widget: UploadProducts()),
+                    CoverWidget(widget: CategoriesPage()),
+                    CoverWidget(widget: UploadCategoris()),
                     CoverWidget(widget: CommunityReportPage()),
                     CoverWidget(widget: ConfirmSellerPage()),
                     CoverWidget(widget: States()),
