@@ -10,6 +10,7 @@ import 'package:admin/utils/cached_image.dart';
 import 'package:admin/utils/dialog.dart';
 import 'package:admin/utils/empty.dart';
 import 'package:admin/utils/next_screen.dart';
+import 'package:admin/utils/string_extension.dart';
 import 'package:admin/utils/styles.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/widgets/blog_preview.dart';
@@ -275,7 +276,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    d.title!,
+                    StringExtension.capitalize(d.title!),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
